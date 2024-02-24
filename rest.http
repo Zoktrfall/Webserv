@@ -1,0 +1,11 @@
+GET http://localhost:8080 HTTP/1.1
+Received: GET / HTTP/1.1
+Host: localhost:8080
+Connection: keep-alive
+Authorization: Bearer asldkfhasjdhas5d4f7asdvf6sd5vgbf65d87g6f5va8s7vd5f86sd5f86asd5gvs6a5f8as6gd5f
+accept-encoding: gzip, deflate, br
+Content-Type: application/json
+
+{
+	"name": "Arman"
+}
