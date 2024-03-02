@@ -6,4 +6,8 @@
 # include <arpa/inet.h>
 # include <sys/socket.h>
 
+# define PORT 8080
+# define MAX_BUFFER_SIZE 1024
+
 void	getHostIP(void);
+int		server(void);
