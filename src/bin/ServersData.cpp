@@ -3,11 +3,17 @@
 
 ServersData::ServersData(void) { }
 
-ServersData::ServersData(const std::string& filePath) {
-	ConfigParser	parser;
-	(void) filePath;
-	(void) parser;
+// ServersData::ServersData(const std::string& filePath) {
+// 	ConfigParser	parser;
+// 	(void) filePath;
+// 	(void) parser;
+// }
+
+ServersData::ServersData(char* filePath) {
+	if(filePath == NULL)
+		exit(1);
 }
+
 
 ServersData::ServersData(const ServersData& rhs) {
 	this->_isOkay = rhs._isOkay;
