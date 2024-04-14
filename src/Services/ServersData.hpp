@@ -8,7 +8,8 @@
 
 class ServersData : public IServersData {
 	public:
-		ServersData(const std::string&);
+		// ServersData(const std::string&);
+		ServersData(char*);
 		ServersData(const ServersData&);
 		~ServersData(void);
 
