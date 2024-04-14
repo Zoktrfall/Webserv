@@ -28,9 +28,9 @@ BLUE   = \033[34m
 all : ${NAME}
 
 ${NAME}: Makefile ${OBJS}
-	@echo "${BLUE}Linking..."
+	@echo "${BLUE}Linking...${RESET}"
 	${CPP} -g ${CPPFLAGS} ${LIBS} -o ${NAME} ${OBJS}
-	@echo "${GREEN}Done."
+	@echo "${GREEN}Done.${RESET}"
 
 ${OBJ_DIR}/%.o: ${SRC_DIR}/%.cpp
 	@printf "${YELLOW}"
