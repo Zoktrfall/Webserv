@@ -11,24 +11,30 @@
 
 #include "ServersData.hpp"
 
+struct ServerSocket
+{
+    struct sockaddr_in ServerAddress;
+    int serverSocket;
+};
+
 
 class WebServer
 {
     public : 
         WebServer(char* configFilePath);
-        void Start();
+        void RunWebServer();
     private : 
         ServersData _serversData;
-        std::vector<int> _serverSockets;
+        std::vector<ServerSocket> _serverSockets;
         std::vector<int> _readSockets;
         std::vector<int> _writeSockets;
 
         void CreateServer(void);
-        void UpServer(void);
+        void StartServer(void);
 
         void WriteSockets(fd_set& WriteFDS);
         void ReadSockets(fd_set& ReadFDS);
-        void ServerSockets(fd_set& ReadFDS);
+        void ServerSockets(fd_set& WriteFDS);
 
         int BindFDS(fd_set& ReadFDS, fd_set& WriteFDS);
 };
