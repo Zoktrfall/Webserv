@@ -4,12 +4,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h> 
-
 #include "ServersData.hpp"
+#include "ISocketsController.hpp"
+#include "IWebServerController.hpp"
 
 struct ServerSocket
 {
@@ -17,12 +14,11 @@ struct ServerSocket
     int serverSocket;
 };
 
-
-class WebServer
+class WebServer : public IWebServerController, ISocketsController
 {
     public : 
         WebServer(char* configFilePath);
-        void RunWebServer();
+        void RunWebServer(void);
     private : 
         ServersData _serversData;
         std::vector<ServerSocket> _serverSockets;
@@ -35,7 +31,6 @@ class WebServer
         void WriteSockets(fd_set& WriteFDS);
         void ReadSockets(fd_set& ReadFDS);
         void ServerSockets(fd_set& WriteFDS);
-
         int BindFDS(fd_set& ReadFDS, fd_set& WriteFDS);
 };
 

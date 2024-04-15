@@ -9,15 +9,12 @@ WebServer::WebServer(char* configFilePath) : _serversData(configFilePath)
 void WebServer::RunWebServer()
 {
     WebServer::CreateServer();
-    
-    // for(int i = 0; i < 5; i++)
-    //    delete &_serverSockets[i];
-
     WebServer::StartServer();
 }
 
-void WebServer::CreateServer(void)
+void WebServer::CreateServer(void) //* Needs some work *
 {
+    /* Needs improvement, this is hard code */
     for (int i = 0; i < 5 /*_serversData.Lenght()*/ ; ++i) 
     {
         int port = 9090 + i;
@@ -100,8 +97,6 @@ void WebServer::ServerSockets(fd_set& ReadFDS)
                 std::cout<<"-->Error accepting new connection"<<std::endl;
         }
 }
-
-
 
 int WebServer::BindFDS(fd_set& ReadFDS, fd_set& WriteFDS)
 {
