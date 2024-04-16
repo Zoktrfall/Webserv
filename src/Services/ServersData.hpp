@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <cstdlib>
 #include "Server.hpp"
 #include "IServersData.hpp"
 #include "ConfigParser.hpp"

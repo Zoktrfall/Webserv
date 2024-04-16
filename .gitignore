@@ -1,1 +1,8 @@
 .DS_Store
+.vscode
+.docker
+file
+obj
+webserv
+test.conf
+rest.http
