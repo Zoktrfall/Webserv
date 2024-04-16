@@ -7,6 +7,7 @@
 #include "ServersData.hpp"
 #include "ISocketsController.hpp"
 #include "IWebServerController.hpp"
+#include "HttpController.hpp"
 
 struct ServerSocket
 {
@@ -14,7 +15,7 @@ struct ServerSocket
     int serverSocket;
 };
 
-class WebServer : public IWebServerController, ISocketsController
+class WebServer : public HttpController, IWebServerController, ISocketsController
 {
     public : 
         WebServer(char* configFilePath);

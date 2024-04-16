@@ -31,6 +31,8 @@ void WebServer::CreateServer(void) //* Needs some work *
         listen(_serverSockets[i].serverSocket, 1);
 }
 
+
+
 void WebServer::StartServer(void)
 {
     fd_set	ReadFDS, WriteFDS;
@@ -59,7 +61,7 @@ void WebServer::WriteSockets(fd_set& WriteFDS)
         if(FD_ISSET(_writeSockets[i], &WriteFDS))
         {
             std::cout<<"-->Response is Ready"<<std::endl;
-            // call HttpResponse func...
+            HttpController::HttpResponse(_writeSockets[i]);
             close(_writeSockets[i]);
             _writeSockets.erase(_writeSockets.begin() + i);
         }
@@ -72,12 +74,14 @@ void WebServer::ReadSockets(fd_set& ReadFDS)
     for(size_t i = 0; i < _readSockets.size(); ++i)
         if(FD_ISSET(_readSockets[i], &ReadFDS))
         {
-            // if(httpRequest is true)
+            if(HttpController::HttpRequest(_readSockets[i]))
+            {
                 std::cout<<"-->Request is Ready"<<std::endl;
                 _writeSockets.push_back(_readSockets[i]);
                 _readSockets.erase(_readSockets.begin() + i);
-            // else
-                // std::cout<<"-->Request isn't Ready";
+            }
+            else
+                std::cout<<"-->Request isn't Ready";
         }
 }
 
