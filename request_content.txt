@@ -1,0 +1,12 @@
+GET / HTTP/1.1
+user-agent: vscode-restclient
+host: localhost:9090
+content-type: application/json
+accept-encoding: gzip, deflate
+content-length: 54
+Connection: close
+
+{
+  "key": "value",
+  "another_key": "another_value"
+}

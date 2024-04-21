@@ -1,8 +1,16 @@
 #ifndef HTTP_CONTROLLER_HPP
 #define HTTP_CONTROLLER_HPP
-#include "IHttpController.hpp"
+#include <sys/socket.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include "Request.hpp"
 
-class HttpController : public IHttpController
+// Default
+# define RECV_SIZE 4096
+// # define CGI_BUFSIZE 4096
+
+class HttpController
 {
     public :
         bool HttpRequest(int readSocket);
@@ -10,8 +18,12 @@ class HttpController : public IHttpController
 
         virtual ~HttpController() {};
     private :
-        
-        
+        std::map<int, Request> _requests;
+
+        bool CheckRequestIn(int sokcetId);
+        void CreateNewRequest(int socketId);
+        bool ReadRequest(int socketId);
+        bool ParseRequest(std::string& requestContent, Request& request);
 };
 
 #endif

@@ -25,6 +25,7 @@ class WebServer : public HttpController, IWebServerController, ISocketsControlle
         std::vector<ServerSocket> _serverSockets;
         std::vector<int> _readSockets;
         std::vector<int> _writeSockets;
+        int _maxAvailableFD;
 
         void CreateServer(void);
         void StartServer(void);
@@ -32,7 +33,7 @@ class WebServer : public HttpController, IWebServerController, ISocketsControlle
         void WriteSockets(fd_set& WriteFDS);
         void ReadSockets(fd_set& ReadFDS);
         void ServerSockets(fd_set& WriteFDS);
-        int BindFDS(fd_set& ReadFDS, fd_set& WriteFDS);
+        void InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS);
 };
 
 #endif

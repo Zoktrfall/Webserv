@@ -2,8 +2,8 @@
 
 WebServer::WebServer(char* configFilePath) : _serversData(configFilePath)
 {
-    // if(_serversData.IsOkay())
-        // exit(0); // at this stage so far  
+    // if(_serversData.IsOkay()) // //* Parts some work *
+        // exit(0); // at this stage so far
 }
 
 void WebServer::RunWebServer()
@@ -18,7 +18,7 @@ void WebServer::CreateServer(void) //* Needs some work *
     for (int i = 0; i < 5 /*_serversData.Lenght()*/ ; ++i) 
     {
         int port = 9090 + i;
-        ServerSocket* server = new ServerSocket();;
+        ServerSocket* server = new ServerSocket();
         server->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
         server->ServerAddress.sin_family = AF_INET;
         server->ServerAddress.sin_port = htons(port);
@@ -33,19 +33,25 @@ void WebServer::CreateServer(void) //* Needs some work *
 
 
 
+
 void WebServer::StartServer(void)
 {
     fd_set	ReadFDS, WriteFDS;
+    struct timeval timer;
+
     while(true)
     {
-        int maxAvailableFD = BindFDS(ReadFDS, WriteFDS);
+        timer.tv_sec = 1;
+        timer.tv_usec = 0;
+        InitializeFDSets(ReadFDS, WriteFDS);
 
         // Socket State
         std::cout<<"ServerSockets: "<<_serverSockets.size()<<std::endl;
         std::cout<<"ReadSockets: "<<_readSockets.size()<<std::endl;
         std::cout<<"WriteSockets: "<<_writeSockets.size()<<std::endl;
 
-        if(select(maxAvailableFD + 1, &ReadFDS, &WriteFDS, 0, 0) >= 0)
+         // select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, timer) //* Needs some work *
+        if(select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, NULL) >= 0)
         {
             WebServer::WriteSockets(WriteFDS);
             WebServer::ReadSockets(ReadFDS);
@@ -65,7 +71,6 @@ void WebServer::WriteSockets(fd_set& WriteFDS)
             close(_writeSockets[i]);
             _writeSockets.erase(_writeSockets.begin() + i);
         }
-       
 }
 
 void WebServer::ReadSockets(fd_set& ReadFDS)
@@ -102,32 +107,30 @@ void WebServer::ServerSockets(fd_set& ReadFDS)
         }
 }
 
-int WebServer::BindFDS(fd_set& ReadFDS, fd_set& WriteFDS)
+void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
 {
     FD_ZERO(&WriteFDS);
     FD_ZERO(&ReadFDS);
-    int maxAvailableFD = 3;
+    _maxAvailableFD = 0;
 
     for(size_t i = 0; i < _serverSockets.size(); i++)
     {
-        if(_serverSockets[i].serverSocket > maxAvailableFD)
-            maxAvailableFD = _serverSockets[i].serverSocket;
+        if(_serverSockets[i].serverSocket > _maxAvailableFD)
+            _maxAvailableFD = _serverSockets[i].serverSocket;
         FD_SET(_serverSockets[i].serverSocket, &ReadFDS);
     }
 
     for(size_t i = 0; i< _readSockets.size(); i++)
     {
-        if(_readSockets[i] > maxAvailableFD)
-            maxAvailableFD = _readSockets[i];
+        if(_readSockets[i] > _maxAvailableFD)
+            _maxAvailableFD = _readSockets[i];
         FD_SET(_readSockets[i], &ReadFDS);
     }
 
     for(size_t i = 0; i < _writeSockets.size(); i++)
     {
-        if(_writeSockets[i] > maxAvailableFD)
-            maxAvailableFD = _writeSockets[i];
+        if(_writeSockets[i] > _maxAvailableFD)
+            _maxAvailableFD = _writeSockets[i];
         FD_SET(_writeSockets[i], &WriteFDS);
     }
-
-    return maxAvailableFD;
 }
