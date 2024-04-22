@@ -2,6 +2,7 @@
 #define HTTP_CONTROLLER_HPP
 #include <sys/socket.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 #include "Request.hpp"
@@ -22,8 +23,9 @@ class HttpController
 
         bool CheckRequestIn(int sokcetId);
         void CreateNewRequest(int socketId);
-        bool ReadRequest(int socketId);
-        bool ParseRequest(std::string& requestContent, Request& request);
+        bool ProcessHTTPRequest(int socketId);
+        bool ParseHTTPRequest(std::string& requestContent, Request& request);
+        void FirstRequestLine(const std::string& line, Request& request);
 };
 
 #endif

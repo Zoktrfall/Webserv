@@ -2,7 +2,7 @@
 
 WebServer::WebServer(char* configFilePath) : _serversData(configFilePath)
 {
-    // if(_serversData.IsOkay()) // //* Parts some work *
+    // if(!_serversData.IsOkay()) // //* Parts some work *
         // exit(0); // at this stage so far
 }
 
