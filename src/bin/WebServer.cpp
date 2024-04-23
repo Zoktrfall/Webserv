@@ -20,15 +20,25 @@ void WebServer::CreateServer(void) //* Needs some work *
         int port = 9090 + i;
         ServerSocket* server = new ServerSocket();
         server->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+        if(server->serverSocket <= -1) {
+            std::cout<<"Error in <socket>"<<std::endl;
+            exit(0);
+        }
         server->ServerAddress.sin_family = AF_INET;
         server->ServerAddress.sin_port = htons(port);
         _serverSockets.push_back(*server);
     }
     for(int i = 0; i < 5; i++)
-        bind(_serverSockets[i].serverSocket, (struct sockaddr*)&_serverSockets[i].ServerAddress, sizeof(_serverSockets[i].ServerAddress));
+        if(bind(_serverSockets[i].serverSocket, (struct sockaddr*)&_serverSockets[i].ServerAddress, sizeof(_serverSockets[i].ServerAddress)) == -1) {
+            std::cout<<"Error in <bind>"<<std::endl;
+            exit(1);
+        }
 
     for(int i = 0; i < 5; i++)
-        listen(_serverSockets[i].serverSocket, 1);
+        if(listen(_serverSockets[i].serverSocket, 1) == -1) {
+            std::cout<<"Error in <listen>"<<std::endl;
+            exit(1);
+        }
 }
 
 

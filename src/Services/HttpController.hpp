@@ -6,8 +6,9 @@
 #include <string>
 #include <vector>
 #include "Request.hpp"
+#include "Tools.hpp"
 
-// Default
+
 # define RECV_SIZE 4096
 // # define CGI_BUFSIZE 4096
 
@@ -26,6 +27,7 @@ class HttpController
         bool ProcessHTTPRequest(int socketId);
         bool ParseHTTPRequest(std::string& requestContent, Request& request);
         void FirstRequestLine(const std::string& line, Request& request);
+        void ParseHeaderLine(const std::string& line, Request& request);
 };
 
 #endif

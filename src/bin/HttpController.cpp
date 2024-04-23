@@ -25,35 +25,49 @@ void HttpController::FirstRequestLine(const std::string& line, Request& request)
     request.SetMethod(parsedMethod);
     request.SetPath(path);
     request.SetVersion(version);
+
+    request.SetFirstLineCheck(true);
 }
 
+void HttpController::ParseHeaderLine(const std::string& line, Request& request)
+{
+    // std::cout<<std::endl;
+    // std::cout<<line<<std::endl;
+    // std::cout<<std::endl;
+
+
+    std::istringstream iss(line);
+    std::string headerName, headerValue;
+    std::getline(iss, headerName, ':');
+    std::getline(iss, headerValue);
+
+
+    // headerValue = Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces));
+    
+    // std::cout<<"headerName:"<<headerName<<std::endl;
+    // std::cout<<"headerValue:"<<headerValue<<std::endl;
+
+    request.SetHeader(headerName, Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces)));
+}
 
 bool HttpController::ParseHTTPRequest(std::string& requestContent, Request& request)
 {
     std::istringstream iss(requestContent);
-    // std::vector<std::string> lines;
     std::string line;
-    bool firstCheck = false;
 
     while (std::getline(iss, line))
     {    
-        if(!firstCheck)
-        {
+        while (!line.empty() && (line.back() == '\r' || line.back() == '\n'))
+            line.pop_back();
+
+        if (line.empty())
+            break;
+
+        if (!request.GetFirstLineCheck())
             FirstRequestLine(line, request);
-            firstCheck = true;
-        }
-
-        // if (!line.empty() && line.back() == '\r') {
-        //     line.pop_back();
-        // }
-        // lines.push_back(line);
+        else
+            ParseHeaderLine(line, request);
     }
-
-    // std::cout<<std::endl;
-    // for(int i = 0; i < lines.size(); i++)
-    //     std::cout<<lines[i]<<std::endl;
-    // std::cout<<std::endl;
-
 
     return true;       
 }
@@ -104,8 +118,10 @@ bool HttpController::HttpRequest(int readSocket)
 {   
     if(!CheckRequestIn(readSocket))
         CreateNewRequest(readSocket);
-    // for (std::map<int, Request>::iterator it = _requests.begin(); it != _requests.end(); ++it)
-            // std::cout << "Key: " << it->first << ", Value: "<< it->second.GetMethod() <<" "<< it->second.GetPath() << " " << it->second.GetVersion() << std::endl;
+    for (std::map<int, Request>::iterator it = _requests.begin(); it != _requests.end(); ++it) {
+            std::cout << "Key: " << it->first << ", Value: "<< it->second.GetMethod() <<" "<< it->second.GetPath() << " " << it->second.GetVersion() << std::endl;
+            it->second.printHeaders();
+    }
     return ProcessHTTPRequest(readSocket);
 }
 
