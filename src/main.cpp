@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     }   
         
     WebServer mainServer(argv[1]);
-    mainServer.RunWebServer();
+    // mainServer.RunWebServer();
     // system("leaks webserv");
     return 0;
 }

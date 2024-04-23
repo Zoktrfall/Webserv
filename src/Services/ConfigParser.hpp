@@ -9,6 +9,6 @@
 
 class ConfigParser : public IConfigParser {
 	public:
-		std::vector<Server> parseConfigFile(const std::string&);
+		std::vector<Server> parse(const std::string);
 
 };

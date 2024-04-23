@@ -3,17 +3,13 @@
 
 ServersData::ServersData(void) { }
 
-// ServersData::ServersData(const std::string& filePath) {
-// 	ConfigParser	parser;
-// 	(void) filePath;
-// 	(void) parser;
-// }
-
-ServersData::ServersData(char* filePath) {
+ServersData::ServersData(const char* filePath) {
 	if(filePath == NULL)
 		exit(1);
+	ConfigParser	parser;
+	this->setServers(parser.parse(filePath));
+	std::cout << this->_servers[0].getServerName() << std::endl;
 }
-
 
 ServersData::ServersData(const ServersData& rhs) {
 	this->_isOkay = rhs._isOkay;

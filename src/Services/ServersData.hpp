@@ -9,16 +9,15 @@
 
 class ServersData : public IServersData {
 	public:
-		// ServersData(const std::string&);
-		ServersData(char*);
+		ServersData(const char*);
 		ServersData(const ServersData&);
 		~ServersData(void);
 
 		ServersData& operator=(const ServersData&);
 
+		inline bool					isOkay(void)		const;
 		const std::vector<Server>&	getServers(void)	const;
 		void						setServers(const std::vector<Server>&);
-		inline bool					isOkay(void)		const;
 		
 	private:
 		bool					_isOkay;

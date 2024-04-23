@@ -9,5 +9,5 @@ class IConfigParser {
 	public:
 		virtual ~IConfigParser(void) {}
 
-		virtual std::vector<Server> parseConfigFile(const std::string&) = 0;
+		virtual std::vector<Server> parse(const std::string) = 0;
 };
