@@ -18,7 +18,7 @@ FileOperation& FileOperation::operator=(const FileOperation& rhs) {
 	return (*this);
 }
 
-std::string	FileOperation::readFile(const std::string& fileName) const {
+std::string	FileOperation::readFile(const std::string& fileName) {
 	std::ifstream	file(fileName.c_str());
 	if (!file.is_open())
 		throw std::runtime_error("Unable to open file: " + fileName);
@@ -32,11 +32,12 @@ std::string	FileOperation::readFile(const std::string& fileName) const {
 	return (content);
 }
 
-void	FileOperation::writeFile(const std::string& fileName, const std::string& content) const {
+void	FileOperation::writeFile(const std::string& fileName, const std::string& content) {
 	std::ofstream	file(fileName.c_str());
 	if (!file.is_open())
 		throw std::runtime_error("Unable to open file: " + fileName);
 
 	file << content;
 	file.close();
+	return ;
 }

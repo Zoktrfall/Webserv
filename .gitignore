@@ -4,5 +4,5 @@
 file
 obj
 webserv
-test.conf
+default.conf
 rest.http

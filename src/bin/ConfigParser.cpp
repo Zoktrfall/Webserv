@@ -1,12 +1,12 @@
 #include "ConfigParser.hpp"
 #include "Server.hpp"
+#include "FileOperation.hpp"
 
 std::vector<Server> ConfigParser::parse(const std::string filePath) {
 	std::vector<Server>	servers;
-	(void)filePath;
-	std::cout << filePath << std::endl;
-	Server s;
-	s.setServerName(std::string("Arman"));
-	servers.push_back(s);
+	std::string			configContent = FileOperation::readFile(filePath);
+
+	std::cout << configContent << std::endl;
+
 	return servers;
 }

@@ -1,15 +1,23 @@
-#pragma once
+#ifndef FILEOPERATION_HPP
+# define FILEOPERATION_HPP
 
-# include "IFileOperation.hpp"
+# include <iostream>
+# include <fstream>
+# include <string>
+# include <stdexcept>
 
-class FileOperation : public IFileOperation {
+
+class FileOperation {
 	public:
+		static std::string	readFile(const std::string&);
+		static void			writeFile(const std::string&, const std::string&);
+	
+	private:
 		FileOperation(void);
 		FileOperation(const FileOperation&);
 		~FileOperation(void);
 
 		FileOperation& operator=(const FileOperation&);
-
-		std::string	readFile(const std::string&)						const;
-		void		writeFile(const std::string&, const std::string&)	const;
 };
+
+#endif

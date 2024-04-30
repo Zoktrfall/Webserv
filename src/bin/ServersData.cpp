@@ -4,11 +4,20 @@
 ServersData::ServersData(void) { }
 
 ServersData::ServersData(const char* filePath) {
-	if(filePath == NULL)
-		exit(1);
 	ConfigParser	parser;
-	this->setServers(parser.parse(filePath));
-	std::cout << this->_servers[0].getServerName() << std::endl;
+
+	if (filePath == NULL)
+		filePath = DEFAULT_PATH;
+	try {
+		this->setServers(parser.parse(filePath));
+	}
+	catch(const std::runtime_error& error) {
+		std::cerr << error.what() << std::endl;
+		this->_isOkay = false;
+		return ;
+	}
+
+	// std::cout << this->_servers[0].getServerName() << std::endl;
 }
 
 ServersData::ServersData(const ServersData& rhs) {
