@@ -25,10 +25,10 @@ class HttpController
         bool CheckRequestIn(int sokcetId);
         void CreateNewRequest(int socketId);
         bool ProcessHTTPRequest(int socketId);
-        void ParseRequestHeaders(std::string& requestContent, Request& request);
+        void ParseRequestHeaders(Request& request);
         void FirstRequestLine(const std::string& line, Request& request);
         void ParseHeaderLine(const std::string& line, Request& request);
-        void ParseBody(std::string& requestContent, Request& request);
+        void ParseBody(Request& request);
 };
 
 #endif

@@ -37,9 +37,9 @@ void HttpController::ParseHeaderLine(const std::string& line, Request& request)
     if(!request.HasHeader(headerName))
         request.SetHeader(headerName, Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces)));
 }
-void HttpController::ParseRequestHeaders(std::string& requestContent, Request& request)
+void HttpController::ParseRequestHeaders(Request& request)
 {
-    std::istringstream iss(requestContent);
+    std::istringstream iss(request.GetRequestContent());
     std::string line;
 
     while (std::getline(iss, line))
@@ -55,55 +55,64 @@ void HttpController::ParseRequestHeaders(std::string& requestContent, Request& r
         else
             ParseHeaderLine(line, request);
     }
+    request.AreHeadersFinished(true);
 }
-void HttpController::ParseBody(std::string& requestContent, Request& request)
+void HttpController::ParseBody(Request& request)
 {
     int contentLength = std::atoi(request.GetHeader("content-length").c_str());
-    requestContent = requestContent.substr(requestContent.find("\r\n\r\n") + 4);
-    int currentLength = requestContent.length();
+    std::string newRequestContent = request.GetRequestContent().substr(request.GetRequestContent().find("\r\n\r\n") + 4);
+    request.SetRequestContent(newRequestContent);
+    int currentLength = newRequestContent.length();
 
     if(currentLength > contentLength)
-        request.SetBody(requestContent.substr(0, contentLength));
+        request.SetBody(newRequestContent.substr(0, contentLength));
     else if (currentLength < contentLength)
     {
-        requestContent += Tools::Recv(request.GetSocketId(), contentLength - currentLength);
-        currentLength = requestContent.length();
-        request.SetBody(requestContent);
+        newRequestContent += Tools::Recv(request.GetSocketId(), contentLength - currentLength);
+        request.SetBody(newRequestContent);
     }
     else
-        request.SetBody(requestContent);
+        request.SetBody(newRequestContent);
+
+    request.Status(Completed);
 }
 
 
 bool HttpController::ProcessHTTPRequest(int socketId)
 {
-    std::string requestContent = "";
     while(!_requests[socketId].ReadFurther())
     {   
-        requestContent += Tools::Recv(socketId, RECV_SIZE);
-        if(requestContent.find("\r\n\r\n") != std::string::npos)
+        _requests[socketId].AppendRequestContent(Tools::Recv(socketId, RECV_SIZE));
+        if(_requests[socketId].GetRequestContent().find("\r\n\r\n") != std::string::npos)
             _requests[socketId].ReadFurther(true);
     }
-
-    // std::cout<<requestContent<<std::endl;
-    ParseRequestHeaders(requestContent, _requests[socketId]);
+    if(!_requests[socketId].AreHeadersFinished())
+        ParseRequestHeaders(_requests[socketId]);
 
     if(_requests[socketId].HasHeader("content-length"))
-        ParseBody(requestContent, _requests[socketId]);
+        ParseBody(_requests[socketId]);
+    // else if(_requests[socketId].HasHeader(""))
+    // {
+    //     std::cout<<"Chunked"<<std::endl;
+    //     exit(1);
+    // }
+    else
+        _requests[socketId].Status(Completed);
 
 
 
 
-
-
+    std::cout<<_requests[socketId].GetRequestContent()<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<std::endl;
     std::cout<<"Method: "<<_requests[socketId].GetMethod()<<std::endl;
     std::cout<<"Path: "<<_requests[socketId].GetPath()<<std::endl;
     std::cout<<"Version: "<<_requests[socketId].GetVersion()<<std::endl;
     _requests[socketId].printHeaders();
-    std::cout<<"Body"<<std::endl;
+    std::cout<<"---->Body"<<std::endl;
     std::cout<<_requests[socketId].GetBody()<<std::endl;
 
-    return true;
+    return _requests[socketId].Status();
 }
 
 bool HttpController::HttpRequest(int readSocket)
@@ -112,7 +121,6 @@ bool HttpController::HttpRequest(int readSocket)
         CreateNewRequest(readSocket);
     return ProcessHTTPRequest(readSocket);
 }
-
 void HttpController::HttpResponse(int readSocket) //* Needs some work *
 {
     const char *http_response = "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nHello World!";

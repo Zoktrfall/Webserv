@@ -5,6 +5,12 @@
 
 #include <iostream>
 
+enum HttpRequestStatus
+{
+    InProgress,
+    Completed
+};
+
 enum HttpMethod
 {
     GET,
@@ -20,8 +26,12 @@ class Request
     public :
         Request();
 
+        void Status(HttpRequestStatus status);
         void SetFirstLineCheck(bool firstLineCheck);
         void ReadFurther(bool requestComplete);
+        void AreHeadersFinished(bool headersRead);
+        void AppendRequestContent(std::string partRequestContent);
+        void SetRequestContent(std::string& requestContent);
 
         void SetSocketId(const int socketId);
         void SetMethod(HttpMethod method);
@@ -30,8 +40,11 @@ class Request
         void SetHeader(const std::string& headerName, const std::string& headerValue);
         void SetBody(const std::string& partBody);
 
+        HttpRequestStatus Status(void) const;
         bool GetFirstLineCheck(void) const;
         bool ReadFurther(void) const;
+        bool AreHeadersFinished(void) const;
+        const std::string& GetRequestContent(void) const;
 
         int GetSocketId(void) const;
         HttpMethod GetMethod(void) const;
@@ -50,8 +63,11 @@ class Request
         }
 
     private :
+        HttpRequestStatus _HttpRequestStatus;
         bool _firstLineCheck;
         bool _requestComplete;
+        bool _headersRead;
+        std::string _requestContent;
         int _socketId;
 
         HttpMethod _method;
