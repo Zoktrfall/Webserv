@@ -5,9 +5,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cstdlib>
 #include "Request.hpp"
 #include "Tools.hpp"
-
 
 # define RECV_SIZE 4096
 // # define CGI_BUFSIZE 4096
@@ -25,9 +25,10 @@ class HttpController
         bool CheckRequestIn(int sokcetId);
         void CreateNewRequest(int socketId);
         bool ProcessHTTPRequest(int socketId);
-        bool ParseHTTPRequest(std::string& requestContent, Request& request);
+        void ParseRequestHeaders(std::string& requestContent, Request& request);
         void FirstRequestLine(const std::string& line, Request& request);
         void ParseHeaderLine(const std::string& line, Request& request);
+        void ParseBody(std::string& requestContent, Request& request);
 };
 
 #endif

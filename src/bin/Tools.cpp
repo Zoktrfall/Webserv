@@ -22,3 +22,14 @@ std::string& Tools::Trim(std::string& str, const std::string& trimmerStr)
 		str.clear();
 	return str;
 }
+
+std::string Tools::Recv(const int socketId, const int bufferSize)
+{
+	char requestBuffer[bufferSize];
+
+	bzero(&requestBuffer, bufferSize * sizeof(char));
+	if(recv(socketId, requestBuffer, sizeof(requestBuffer), 0) <= 0) 
+        return "";
+	
+    return std::string(requestBuffer);
+}

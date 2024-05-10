@@ -1,10 +1,8 @@
 #include "HttpController.hpp"
 // #include <fstream>
 
-
 bool HttpController::CheckRequestIn(int socketId) { return _requests.count(socketId) > 0 ? true : false; }
-void HttpController::CreateNewRequest(int socketId) { _requests[socketId] = Request(); }
-
+void HttpController::CreateNewRequest(int socketId) { _requests[socketId] = Request(); _requests[socketId].SetSocketId(socketId); }
 void HttpController::FirstRequestLine(const std::string& line, Request& request)
 {
     std::istringstream iss(line);
@@ -28,29 +26,18 @@ void HttpController::FirstRequestLine(const std::string& line, Request& request)
 
     request.SetFirstLineCheck(true);
 }
-
 void HttpController::ParseHeaderLine(const std::string& line, Request& request)
 {
-    // std::cout<<std::endl;
-    // std::cout<<line<<std::endl;
-    // std::cout<<std::endl;
-
-
     std::istringstream iss(line);
     std::string headerName, headerValue;
+
     std::getline(iss, headerName, ':');
     std::getline(iss, headerValue);
 
-
-    // headerValue = Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces));
-    
-    // std::cout<<"headerName:"<<headerName<<std::endl;
-    // std::cout<<"headerValue:"<<headerValue<<std::endl;
-
-    request.SetHeader(headerName, Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces)));
+    if(!request.HasHeader(headerName))
+        request.SetHeader(headerName, Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces)));
 }
-
-bool HttpController::ParseHTTPRequest(std::string& requestContent, Request& request)
+void HttpController::ParseRequestHeaders(std::string& requestContent, Request& request)
 {
     std::istringstream iss(requestContent);
     std::string line;
@@ -68,48 +55,53 @@ bool HttpController::ParseHTTPRequest(std::string& requestContent, Request& requ
         else
             ParseHeaderLine(line, request);
     }
-
-    return true;       
 }
+void HttpController::ParseBody(std::string& requestContent, Request& request)
+{
+    int contentLength = std::atoi(request.GetHeader("content-length").c_str());
+    requestContent = requestContent.substr(requestContent.find("\r\n\r\n") + 4);
+    int currentLength = requestContent.length();
+
+    if(currentLength > contentLength)
+        request.SetBody(requestContent.substr(0, contentLength));
+    else if (currentLength < contentLength)
+    {
+        requestContent += Tools::Recv(request.GetSocketId(), contentLength - currentLength);
+        currentLength = requestContent.length();
+        request.SetBody(requestContent);
+    }
+    else
+        request.SetBody(requestContent);
+}
+
 
 bool HttpController::ProcessHTTPRequest(int socketId)
 {
-    char requestBuffer[RECV_SIZE];
-    int readBytes;
     std::string requestContent = "";
-    while(true)
-    {
-        bzero(&requestBuffer, RECV_SIZE * sizeof(char));
-        readBytes = recv(socketId, requestBuffer, sizeof(requestBuffer), 0);
-        if (readBytes <= 0)
-			break ;
-        
-        requestContent += std::string(requestBuffer);
-        if(!ParseHTTPRequest(requestContent, _requests[socketId]))
-            return false;
-
-
-        // std::cout<<std::endl;
-        // std::cout<<readBytes<<std::endl;
-        // std::cout<<requestContent<<std::endl;
-        // std::cout<<std::endl;
-
-
-        // std::ofstream outputFile("request_content.txt");
-        // outputFile << requestContent;
-        // outputFile.close();
-        // std::cout << "Содержимое запроса сохранено в файле 'request_content.txt'" << std::endl;
-        
-        
-        break;
+    while(!_requests[socketId].ReadFurther())
+    {   
+        requestContent += Tools::Recv(socketId, RECV_SIZE);
+        if(requestContent.find("\r\n\r\n") != std::string::npos)
+            _requests[socketId].ReadFurther(true);
     }
-    // _requests.erase(socketId); //* Needs some work *
-    
-    // std::cout<<std::endl;
-    // std::cout<<_requests[socketId].GetMethod()<<std::endl;
-    // std::cout<<_requests[socketId].GetPath()<<std::endl;
-    // std::cout<<_requests[socketId].GetVersion()<<std::endl;
-    // std::cout<<std::endl;
+
+    // std::cout<<requestContent<<std::endl;
+    ParseRequestHeaders(requestContent, _requests[socketId]);
+
+    if(_requests[socketId].HasHeader("content-length"))
+        ParseBody(requestContent, _requests[socketId]);
+
+
+
+
+
+
+    std::cout<<"Method: "<<_requests[socketId].GetMethod()<<std::endl;
+    std::cout<<"Path: "<<_requests[socketId].GetPath()<<std::endl;
+    std::cout<<"Version: "<<_requests[socketId].GetVersion()<<std::endl;
+    _requests[socketId].printHeaders();
+    std::cout<<"Body"<<std::endl;
+    std::cout<<_requests[socketId].GetBody()<<std::endl;
 
     return true;
 }
@@ -118,10 +110,6 @@ bool HttpController::HttpRequest(int readSocket)
 {   
     if(!CheckRequestIn(readSocket))
         CreateNewRequest(readSocket);
-    for (std::map<int, Request>::iterator it = _requests.begin(); it != _requests.end(); ++it) {
-            std::cout << "Key: " << it->first << ", Value: "<< it->second.GetMethod() <<" "<< it->second.GetPath() << " " << it->second.GetVersion() << std::endl;
-            it->second.printHeaders();
-    }
     return ProcessHTTPRequest(readSocket);
 }
 
@@ -129,4 +117,5 @@ void HttpController::HttpResponse(int readSocket) //* Needs some work *
 {
     const char *http_response = "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nHello World!";
     send(readSocket, http_response, strlen(http_response), 0);
+    _requests.erase(readSocket);
 }
