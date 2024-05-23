@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <stdlib.h>
 #include "Request.hpp"
 #include "Tools.hpp"
 
@@ -29,6 +30,7 @@ class HttpController
         void FirstRequestLine(const std::string& line, Request& request);
         void ParseHeaderLine(const std::string& line, Request& request);
         void ParseBody(Request& request);
+        void ParseChunked(Request& request);
 };
 
 #endif

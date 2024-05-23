@@ -55,28 +55,48 @@ void HttpController::ParseRequestHeaders(Request& request)
         else
             ParseHeaderLine(line, request);
     }
+    std::string newRequestContent = request.GetRequestContent().substr(request.GetRequestContent().find("\r\n\r\n") + 4);
+    request.SetRequestContent(newRequestContent);
     request.AreHeadersFinished(true);
 }
 void HttpController::ParseBody(Request& request)
 {
     int contentLength = std::atoi(request.GetHeader("content-length").c_str());
-    std::string newRequestContent = request.GetRequestContent().substr(request.GetRequestContent().find("\r\n\r\n") + 4);
-    request.SetRequestContent(newRequestContent);
-    int currentLength = newRequestContent.length();
+    std::string tmpRequestContent = request.GetRequestContent();
+    int currentLength = tmpRequestContent.length();
 
     if(currentLength > contentLength)
-        request.SetBody(newRequestContent.substr(0, contentLength));
+        request.SetBody(tmpRequestContent.substr(0, contentLength));
     else if (currentLength < contentLength)
     {
-        newRequestContent += Tools::Recv(request.GetSocketId(), contentLength - currentLength);
-        request.SetBody(newRequestContent);
+        tmpRequestContent += Tools::Recv(request.GetSocketId(), contentLength - currentLength);
+        request.SetBody(tmpRequestContent);
     }
     else
-        request.SetBody(newRequestContent);
+        request.SetBody(tmpRequestContent);
 
     request.Status(Completed);
 }
+void HttpController::ParseChunked(Request& request)
+{
+    while(request.GetRequestContent().find("0\r\n\r\n") == std::string::npos)
+       request.AppendRequestContent(Tools::Recv(request.GetSocketId(), RECV_SIZE));
 
+    std::string requestContent = request.GetRequestContent();
+    std::string block = requestContent.substr(0, requestContent.find("\r\n"));
+    int blockSize = static_cast<int>(std::strtol(block.c_str(), NULL, 16));
+    if(blockSize == 0)
+    {
+        request.Status(Completed);
+        return;
+    }
+
+    request.SetChunk(requestContent.substr(block.length() + 2, blockSize));
+
+    std::string newRequestContent = requestContent.substr(blockSize + block.length() + 4);
+    request.SetRequestContent(newRequestContent);
+    request.Status(InProgress);
+}
 
 bool HttpController::ProcessHTTPRequest(int socketId)
 {
@@ -91,26 +111,26 @@ bool HttpController::ProcessHTTPRequest(int socketId)
 
     if(_requests[socketId].HasHeader("content-length"))
         ParseBody(_requests[socketId]);
-    // else if(_requests[socketId].HasHeader(""))
-    // {
-    //     std::cout<<"Chunked"<<std::endl;
-    //     exit(1);
-    // }
+    else if(_requests[socketId].HasHeader("transfer-encoding") &&
+        !_requests[socketId].GetHeader("transfer-encoding").compare("chunked"))
+        ParseChunked(_requests[socketId]);
     else
         _requests[socketId].Status(Completed);
 
 
 
 
-    std::cout<<_requests[socketId].GetRequestContent()<<std::endl;
-    std::cout<<std::endl;
-    std::cout<<std::endl;
-    std::cout<<"Method: "<<_requests[socketId].GetMethod()<<std::endl;
-    std::cout<<"Path: "<<_requests[socketId].GetPath()<<std::endl;
-    std::cout<<"Version: "<<_requests[socketId].GetVersion()<<std::endl;
-    _requests[socketId].printHeaders();
-    std::cout<<"---->Body"<<std::endl;
-    std::cout<<_requests[socketId].GetBody()<<std::endl;
+    // std::cout<<_requests[socketId].GetRequestContent()<<std::endl;
+    // std::cout<<std::endl;
+    // std::cout<<std::endl;
+    // std::cout<<"Method: "<<_requests[socketId].GetMethod()<<std::endl;
+    // std::cout<<"Path: "<<_requests[socketId].GetPath()<<std::endl;
+    // std::cout<<"Version: "<<_requests[socketId].GetVersion()<<std::endl;
+    // _requests[socketId].printHeaders();
+    // std::cout<<"---->Body"<<std::endl;
+    // std::cout<<_requests[socketId].GetBody()<<std::endl;
+    // std::cout<<"---->Chunked"<<std::endl;
+    // std::cout<<_requests[socketId].GetChunk()<<std::endl;
 
     return _requests[socketId].Status();
 }

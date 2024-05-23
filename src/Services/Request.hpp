@@ -39,6 +39,7 @@ class Request
         void SetVersion(std::string& version);
         void SetHeader(const std::string& headerName, const std::string& headerValue);
         void SetBody(const std::string& partBody);
+        void SetChunk(const std::string& chunk);
 
         HttpRequestStatus Status(void) const;
         bool GetFirstLineCheck(void) const;
@@ -53,14 +54,15 @@ class Request
         const std::string& GetHeader(const std::string& headerName);
         bool HasHeader(const std::string& headerName) const;
         const std::string& GetBody(void) const;
+        const std::string& GetChunk(void) const;
 
 
 
-        void printHeaders() const {
-            for (const auto& pair : _headers) {
-                std::cout << "Header: " << pair.first << " -> " << pair.second << std::endl;
-            }
-        }
+        // void printHeaders() const {
+        //     for (const auto& pair : _headers) {
+        //         std::cout << "Header: " << pair.first << " -> " << pair.second << std::endl;
+        //     }
+        // }
 
     private :
         HttpRequestStatus _HttpRequestStatus;
@@ -75,6 +77,7 @@ class Request
         std::string	_version;
         std::unordered_map<std::string, std::string> _headers;
         std::string	_body;
+        std::string _chunks;
 };
 
 #endif

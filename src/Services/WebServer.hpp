@@ -15,6 +15,12 @@ struct ServerSocket
     int serverSocket;
 };
 
+struct ClientSocket
+{
+    int clientSocket;
+    bool IsChunked;
+};
+
 class WebServer : public HttpController, IWebServerController, ISocketsController
 {
     public : 
@@ -23,7 +29,7 @@ class WebServer : public HttpController, IWebServerController, ISocketsControlle
     private : 
         ServersData _serversData;
         std::vector<ServerSocket> _serverSockets;
-        std::vector<int> _readSockets;
+        std::vector<ClientSocket> _readSockets;
         std::vector<int> _writeSockets;
         int _maxAvailableFD;
 
