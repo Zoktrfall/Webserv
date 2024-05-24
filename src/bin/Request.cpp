@@ -2,13 +2,13 @@
 
 Request::Request() :
     _HttpRequestStatus(InProgress),
+    _requestContent(""), 
     _method(NONE),
     _path(""),
     _version(""),
     _headers(),
     _body(""),
-    _chunks(""),
-    _requestContent("") {
+    _chunks("") {
         _firstLineCheck = false;
         _requestComplete = false;
 }

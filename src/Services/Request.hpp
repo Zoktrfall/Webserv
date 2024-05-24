@@ -3,8 +3,6 @@
 #include <map>
 #include <string>
 
-#include <iostream>
-
 enum HttpRequestStatus
 {
     InProgress,
@@ -55,14 +53,6 @@ class Request
         bool HasHeader(const std::string& headerName) const;
         const std::string& GetBody(void) const;
         const std::string& GetChunk(void) const;
-
-
-
-        // void printHeaders() const {
-        //     for (const auto& pair : _headers) {
-        //         std::cout << "Header: " << pair.first << " -> " << pair.second << std::endl;
-        //     }
-        // }
 
     private :
         HttpRequestStatus _HttpRequestStatus;

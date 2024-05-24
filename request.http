@@ -1,10 +1,3 @@
 POST / HTTP/1.1
 Host: localhost:9090
-Transfer-Encoding: chunked
 
-fsdafasdf
-asfdasdfasdf
-asfdasdfasdf
-asfdasdfasdf
-asfdasdfasdf
-asdfsfadsfasdf7

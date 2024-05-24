@@ -43,6 +43,7 @@ void WebServer::CreateServer(void) //* Needs some work *
 
 
 
+
 void WebServer::StartServer(void)
 {
     fd_set	ReadFDS, WriteFDS;
@@ -58,7 +59,6 @@ void WebServer::StartServer(void)
         std::cout<<"ServerSockets: "<<_serverSockets.size()<<std::endl;
         std::cout<<"ReadSockets: "<<_readSockets.size()<<std::endl;
         std::cout<<"WriteSockets: "<<_writeSockets.size()<<std::endl;
-
 
         //  select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, NULL) //* Needs some work *
         if(select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, &timer) >= 0)

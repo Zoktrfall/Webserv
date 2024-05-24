@@ -84,6 +84,7 @@ void HttpController::ParseChunked(Request& request)
 
     std::string requestContent = request.GetRequestContent();
     std::string block = requestContent.substr(0, requestContent.find("\r\n"));
+
     int blockSize = static_cast<int>(std::strtol(block.c_str(), NULL, 16));
     if(blockSize == 0)
     {
@@ -91,13 +92,14 @@ void HttpController::ParseChunked(Request& request)
         return;
     }
 
+    // Why am I adding 2 and 4 because when I use .find("0\r\n\r\n") 
+    // it removes the line that doesn't have \r\n in it after 
+    // I need to skip \r\n the chunk, that's why I plus 2 and 4
     request.SetChunk(requestContent.substr(block.length() + 2, blockSize));
-
     std::string newRequestContent = requestContent.substr(blockSize + block.length() + 4);
     request.SetRequestContent(newRequestContent);
     request.Status(InProgress);
 }
-
 bool HttpController::ProcessHTTPRequest(int socketId)
 {
     while(!_requests[socketId].ReadFurther())
@@ -117,33 +119,26 @@ bool HttpController::ProcessHTTPRequest(int socketId)
     else
         _requests[socketId].Status(Completed);
 
-
-
-
-    // std::cout<<_requests[socketId].GetRequestContent()<<std::endl;
-    // std::cout<<std::endl;
-    // std::cout<<std::endl;
-    // std::cout<<"Method: "<<_requests[socketId].GetMethod()<<std::endl;
-    // std::cout<<"Path: "<<_requests[socketId].GetPath()<<std::endl;
-    // std::cout<<"Version: "<<_requests[socketId].GetVersion()<<std::endl;
-    // _requests[socketId].printHeaders();
-    // std::cout<<"---->Body"<<std::endl;
-    // std::cout<<_requests[socketId].GetBody()<<std::endl;
-    // std::cout<<"---->Chunked"<<std::endl;
-    // std::cout<<_requests[socketId].GetChunk()<<std::endl;
-
     return _requests[socketId].Status();
 }
-
 bool HttpController::HttpRequest(int readSocket)
 {   
     if(!CheckRequestIn(readSocket))
         CreateNewRequest(readSocket);
     return ProcessHTTPRequest(readSocket);
 }
+
 void HttpController::HttpResponse(int readSocket) //* Needs some work *
 {
     const char *http_response = "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nHello World!";
     send(readSocket, http_response, strlen(http_response), 0);
+
+
+
+
+
+
+
+    
     _requests.erase(readSocket);
 }

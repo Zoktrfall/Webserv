@@ -1,19 +1,13 @@
 #ifndef HTTP_CONTROLLER_HPP
 #define HTTP_CONTROLLER_HPP
-#include <sys/socket.h>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <cstdlib>
-#include <stdlib.h>
+#include "IHttpController.hpp"
 #include "Request.hpp"
 #include "Tools.hpp"
 
 # define RECV_SIZE 4096
-// # define CGI_BUFSIZE 4096
+# define CGI_BUFSIZE 4096
 
-class HttpController
+class HttpController : public IHttpController
 {
     public :
         bool HttpRequest(int readSocket);
