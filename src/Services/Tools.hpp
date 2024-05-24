@@ -1,6 +1,7 @@
 #ifndef TOOLS_HPP
 #define TOOLS_HPP
 #include <string>
+#include <cstring>
 #include <sys/socket.h>
 
 #define WhiteSpaces " \n\t\v\f\r"

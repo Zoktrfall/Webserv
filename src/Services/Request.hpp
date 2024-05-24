@@ -65,7 +65,7 @@ class Request
         HttpMethod _method;
         std::string _path;
         std::string	_version;
-        std::unordered_map<std::string, std::string> _headers;
+        std::map<std::string, std::string> _headers;
         std::string	_body;
         std::string _chunks;
 };
