@@ -2,6 +2,7 @@
 #define REQUEST_HPP
 #include <map>
 #include <string>
+#include <iostream>
 
 enum HttpRequestStatus
 {
@@ -53,6 +54,11 @@ class Request
         bool HasHeader(const std::string& headerName) const;
         const std::string& GetBody(void) const;
         const std::string& GetChunk(void) const;
+
+        // void printHeaders() {
+        //     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); ++it)
+        //         std::cout << it->first << ": " << it->second << std::endl;
+        // }
 
     private :
         HttpRequestStatus _HttpRequestStatus;

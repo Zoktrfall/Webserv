@@ -30,6 +30,7 @@ std::string Tools::Recv(const int socketId, const int bufferSize)
 	bzero(&requestBuffer, bufferSize * sizeof(char));
 	if(recv(socketId, requestBuffer, sizeof(requestBuffer), 0) <= 0) 
         return "";
+
 	
     return std::string(requestBuffer);
 }

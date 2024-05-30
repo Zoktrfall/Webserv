@@ -18,27 +18,51 @@ void WebServer::CreateServer(void) //* Needs some work *
     for (int i = 0; i < 5 /*_serversData.Lenght()*/ ; ++i) 
     {
         int port = 9090 + i;
+
+
         ServerSocket* server = new ServerSocket();
+        memset(&server->ServerAddress, 0, sizeof(server->ServerAddress));
         server->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-        if(server->serverSocket <= -1) {
+        if(server->serverSocket <= -1)
+        {
             std::cout<<"Error in <socket>"<<std::endl;
             exit(0);
         }
+
+        int optionValue = 1;
+	    if (setsockopt(server->serverSocket, SOL_SOCKET, SO_REUSEADDR, &optionValue, sizeof(int)) < 0)
+		    exit(1);
+    
         server->ServerAddress.sin_family = AF_INET;
+        server->ServerAddress.sin_addr.s_addr = INADDR_ANY; // Need to Improve
         server->ServerAddress.sin_port = htons(port);
         _serverSockets.push_back(*server);
     }
+
+
     for(int i = 0; i < 5; i++)
-        if(bind(_serverSockets[i].serverSocket, (struct sockaddr*)&_serverSockets[i].ServerAddress, sizeof(_serverSockets[i].ServerAddress)) == -1) {
+        if(bind(_serverSockets[i].serverSocket, (struct sockaddr*)&_serverSockets[i].ServerAddress, 
+            sizeof(_serverSockets[i].ServerAddress)) == -1)
+        {
             std::cout<<"Error in <bind>"<<std::endl;
             exit(1);
         }
 
+
     for(int i = 0; i < 5; i++)
-        if(listen(_serverSockets[i].serverSocket, 1) == -1) {
+    {
+        if(fcntl(_serverSockets[i].serverSocket, F_SETFL, O_NONBLOCK) < 0)
+        {   
+            std::cout<<"Error in fcntl"<<std::endl;
+            exit(1);
+        }
+
+        if(listen(_serverSockets[i].serverSocket, 1) == -1)
+        {
             std::cout<<"Error in <listen>"<<std::endl;
             exit(1);
         }
+    }
 }
 
 
@@ -66,6 +90,11 @@ void WebServer::StartServer(void)
             WebServer::WriteSockets(WriteFDS);
             WebServer::ReadSockets(ReadFDS);
             WebServer::ServerSockets(ReadFDS);   
+        }
+        else
+        {
+            std::cout<<"Error in Select"<<std::endl;
+            exit(1);
         }
     }
 }
@@ -112,6 +141,13 @@ void WebServer::ServerSockets(fd_set& ReadFDS)
             int clientSocket = accept(_serverSockets[i].serverSocket, NULL, NULL);
             if (clientSocket != -1)
             {
+                if(fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
+                {
+                    std::cout<<"-->Error accepting new connection"<<std::endl;
+                    close(clientSocket);
+                    return ;
+                }
+
                 std::cout<<"-->Accepted new connection on socket "<<std::endl;
                 ClientSocket newClient;
                 newClient.clientSocket = clientSocket;

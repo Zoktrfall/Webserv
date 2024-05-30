@@ -35,7 +35,7 @@ void HttpController::ParseHeaderLine(const std::string& line, Request& request)
     std::getline(iss, headerValue);
 
     if(!request.HasHeader(headerName))
-        request.SetHeader(headerName, Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces)));
+        request.SetHeader(Tools::ToLower(headerName), Tools::ToLower(Tools::Trim(headerValue, WhiteSpaces)));
 }
 void HttpController::ParseRequestHeaders(Request& request)
 {
@@ -44,8 +44,8 @@ void HttpController::ParseRequestHeaders(Request& request)
 
     while (std::getline(iss, line))
     {    
-        while (!line.empty() && (line.back() == '\r' || line.back() == '\n'))
-            line.pop_back();
+        while (!line.empty() && (line[line.size() - 1] == '\r' || line[line.size() - 1] == '\n'))
+            line.erase(line.size() - 1);
 
         if (line.empty())
             break;
@@ -119,8 +119,21 @@ bool HttpController::ProcessHTTPRequest(int socketId)
     else
         _requests[socketId].Status(Completed);
 
+
+
+    // std::cout<<_requests[socketId].GetMethod()<<std::endl;
+    // std::cout<<_requests[socketId].GetPath()<<std::endl;
+    // std::cout<<_requests[socketId].GetVersion()<<std::endl;
+    // _requests[socketId].printHeaders();
+    // std::cout<<_requests[socketId].GetBody()<<std::endl;
+    // std::cout<<_requests[socketId].GetChunk()<<std::endl;
+    
+
+
     return _requests[socketId].Status();
 }
+
+
 bool HttpController::HttpRequest(int readSocket)
 {   
     if(!CheckRequestIn(readSocket))
