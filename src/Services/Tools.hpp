@@ -2,12 +2,9 @@
 #define TOOLS_HPP
 #include <string>
 #include <cstring>
-#include "IHttpController.hpp"
+#include "HttpTypes.hpp"
 
 #define WhiteSpaces " \n\t\v\f\r"
-#define RecvSize 4096
-#define LimitRequestBody 65536
-#define CGIBufSize 4096
 
 class Tools
 {

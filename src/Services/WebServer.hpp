@@ -1,5 +1,12 @@
 #ifndef HTTP_SERVERS_HPP
 #define HTTP_SERVERS_HPP
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <iostream>
+#include <vector>
+#include <fcntl.h>
+#include <signal.h>
 #include "ServersData.hpp"
 #include "ISocketsController.hpp"
 #include "IWebServerController.hpp"

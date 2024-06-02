@@ -182,7 +182,7 @@ void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
 void WebServer::CheckTimeout(void)
 {
     for(size_t i = 0; i < _readSockets.size(); ++i)
-        if(time(NULL) - _readSockets[i].lastTime > 60)
+        if(time(NULL) - _readSockets[i].lastTime > ConnectionTemeOut)
         {
             
             CloseConnection(_readSockets, i);

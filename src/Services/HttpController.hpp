@@ -1,8 +1,16 @@
 #ifndef HTTP_CONTROLLER_HPP
 #define HTTP_CONTROLLER_HPP
+#include <string>
+#include <sstream>
 #include "IHttpController.hpp"
 #include "Request.hpp"
 #include "Tools.hpp"
+
+#define RecvSize 4096
+#define LimitRequestBody 262144
+#define LimitChunk 262144
+#define CGIBufSize 4096
+#define ConnectionTemeOut 60
 
 class HttpController : public IHttpController
 {

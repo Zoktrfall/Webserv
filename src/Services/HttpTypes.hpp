@@ -1,6 +1,5 @@
 #ifndef HTTP_TYPES_H
 #define HTTP_TYPES_H
-#include <string>
 #include <netinet/in.h>
 #include <ctime>
 

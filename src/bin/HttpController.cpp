@@ -81,10 +81,10 @@ RequestResult HttpController::ParseBody(Request& request)
 }
 RequestResult HttpController::ParseChunked(Request& request)
 {
-    while(request.GetRequestContent().find("0\r\n\r\n") == std::string::npos)
+    if(request.GetRequestContent().find("0\r\n\r\n") == std::string::npos)
     {
-        char requestBuffer[RecvSize];
-        RequestResult recvResult = Tools::Recv(request.GetSocketId(), requestBuffer, RecvSize);
+        char requestBuffer[LimitChunk];
+        RequestResult recvResult = Tools::Recv(request.GetSocketId(), requestBuffer, LimitChunk);
         if(recvResult != Success)
             return recvResult;
         request.AppendRequestContent(std::string(requestBuffer));
