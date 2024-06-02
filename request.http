@@ -1,9 +1,0 @@
-POST / HTTP/1.1
-Host: localhost:8002
-Transfer-Encoding: chunked
-
-asfasfa
-sfasfasfas
-fasfasfasfa
-sfsafasfasf
-asfasfasfasf

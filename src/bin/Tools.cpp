@@ -23,14 +23,14 @@ std::string& Tools::Trim(std::string& str, const std::string& trimmerStr)
 	return str;
 }
 
-std::string Tools::Recv(const int socketId, const int bufferSize)
+RequestResult Tools::Recv(int socketId, char* requestBuffer, size_t bufferSize)
 {
-	char requestBuffer[bufferSize];
-
-	bzero(&requestBuffer, bufferSize * sizeof(char));
-	if(recv(socketId, requestBuffer, sizeof(requestBuffer), 0) <= 0) 
-        return "";
-
-	
-    return std::string(requestBuffer);
+    memset(requestBuffer, 0, bufferSize);
+    int bytesRead = recv(socketId, requestBuffer, bufferSize, 0);
+    
+    if (bytesRead == 0)
+        return ClosedConnection;
+    else if (bytesRead < 0)
+        return ReadError;
+    return Success;
 }

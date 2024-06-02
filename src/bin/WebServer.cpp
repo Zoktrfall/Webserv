@@ -65,9 +65,6 @@ void WebServer::CreateServer(void) //* Needs some work *
     }
 }
 
-
-
-
 void WebServer::StartServer(void)
 {
     fd_set	ReadFDS, WriteFDS;
@@ -78,63 +75,58 @@ void WebServer::StartServer(void)
         timer.tv_sec = 1;
         timer.tv_usec = 0;
         InitializeFDSets(ReadFDS, WriteFDS);
-        
-        // Socket State
-        std::cout<<"ServerSockets: "<<_serverSockets.size()<<std::endl;
-        std::cout<<"ReadSockets: "<<_readSockets.size()<<std::endl;
-        std::cout<<"WriteSockets: "<<_writeSockets.size()<<std::endl;
-
-        //  select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, NULL) //* Needs some work *
-        if(select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, &timer) >= 0)
+        if(select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, &timer) < 0)
         {
-            WebServer::WriteSockets(WriteFDS);
-            WebServer::ReadSockets(ReadFDS);
-            WebServer::ServerSockets(ReadFDS);   
+            if(errno != EPIPE)
+            {
+                std::cout<<strerror(errno)<<std::endl;
+                exit(1);
+            }
+            std::cout<<"error"<<std::endl;
+            continue;
         }
-        else
-        {
-            std::cout<<"Error in Select"<<std::endl;
-            exit(1);
-        }
+        WebServer::WriteSockets(WriteFDS);
+        WebServer::ReadSockets(ReadFDS);
+        WebServer::ServerSockets(ReadFDS);   
+        CheckTimeout();
     }
 }
 
 void WebServer::WriteSockets(fd_set& WriteFDS)
 {
-    std::cout<<"->WriteSockets_FUNC"<<std::endl;
     for(size_t i = 0; i < _writeSockets.size(); ++i)
         if(FD_ISSET(_writeSockets[i], &WriteFDS))
         {
-            std::cout<<"-->Response is Ready"<<std::endl;
             HttpController::HttpResponse(_writeSockets[i]);
-            close(_writeSockets[i]);
-            _writeSockets.erase(_writeSockets.begin() + i);
+            CloseConnection(_writeSockets, i);
         }
 }
 
 void WebServer::ReadSockets(fd_set& ReadFDS)
 {
-    std::cout<<"->ReadSockets_FUNC"<<std::endl;
     for(size_t i = 0; i < _readSockets.size(); ++i)
         if(FD_ISSET(_readSockets[i].clientSocket, &ReadFDS) || _readSockets[i].IsChunked)
         {
-            if(HttpController::HttpRequest(_readSockets[i].clientSocket))
+            RequestResult requestResult = HttpController::HttpRequest(_readSockets[i].clientSocket);
+            if(requestResult == ClosedConnection)
             {
-                std::cout<<"-->Request is Ready"<<std::endl;
-                _writeSockets.push_back(_readSockets[i].clientSocket);
-                _readSockets.erase(_readSockets.begin() + i);
+                std::cout<<"Client Closed Connection"<<std::endl;
+                return CloseConnection(_readSockets, i);
             }
-            else
+            else if(requestResult == ReadError)
             {
+                std::cout<<"Read Error"<<std::endl;
+                return CloseConnection(_readSockets, i);
+            }
+            else if(requestResult == Chunked)
                 _readSockets[i].IsChunked = true;
-                std::cout<<"-->Request isn't Ready"<<std::endl;
-            }
+            else
+                MoveSocketFromReadToWrite(i);
         }
 }
 
 void WebServer::ServerSockets(fd_set& ReadFDS)
 {
-    std::cout<<"->ServerSockets_FUNC"<<std::endl;
     for(size_t i = 0; i < _serverSockets.size(); ++i)
         if(FD_ISSET(_serverSockets[i].serverSocket, &ReadFDS))
         {
@@ -148,10 +140,10 @@ void WebServer::ServerSockets(fd_set& ReadFDS)
                     return ;
                 }
 
-                std::cout<<"-->Accepted new connection on socket "<<std::endl;
                 ClientSocket newClient;
                 newClient.clientSocket = clientSocket;
                 newClient.IsChunked = false;
+                newClient.lastTime = time(NULL);
                 _readSockets.push_back(newClient);
             }
             else
@@ -165,24 +157,52 @@ void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
     FD_ZERO(&ReadFDS);
     _maxAvailableFD = 0;
 
-    for(size_t i = 0; i < _readSockets.size(); i++)
+    for(size_t i = 0; i < _readSockets.size(); ++i)
     {
         if(_readSockets[i].clientSocket > _maxAvailableFD)
             _maxAvailableFD = _readSockets[i].clientSocket;
         FD_SET(_readSockets[i].clientSocket, &ReadFDS);
     }
 
-    for(size_t i = 0; i < _serverSockets.size(); i++)
+    for(size_t i = 0; i < _serverSockets.size(); ++i)
     {
         if(_serverSockets[i].serverSocket > _maxAvailableFD)
             _maxAvailableFD = _serverSockets[i].serverSocket;
         FD_SET(_serverSockets[i].serverSocket, &ReadFDS);
     }
 
-    for(size_t i = 0; i < _writeSockets.size(); i++)
+    for(size_t i = 0; i < _writeSockets.size(); ++i)
     {
         if(_writeSockets[i] > _maxAvailableFD)
             _maxAvailableFD = _writeSockets[i];
         FD_SET(_writeSockets[i], &WriteFDS);
     }
+}
+
+void WebServer::CheckTimeout(void)
+{
+    for(size_t i = 0; i < _readSockets.size(); ++i)
+        if(time(NULL) - _readSockets[i].lastTime > 60)
+        {
+            
+            CloseConnection(_readSockets, i);
+        }
+}
+
+void WebServer::CloseConnection(std::vector<ClientSocket>& sockets, int index) 
+{
+    close(sockets[index].clientSocket);
+    sockets.erase(sockets.begin() + index);
+}
+
+void WebServer::CloseConnection(std::vector<int>& sockets, int index) 
+{
+    close(sockets[index]);
+    sockets.erase(sockets.begin() + index);
+}
+
+void WebServer::MoveSocketFromReadToWrite(int index)
+{
+    _writeSockets.push_back(_readSockets[index].clientSocket);
+    _readSockets.erase(_readSockets.begin() + index);
 }

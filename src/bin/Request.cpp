@@ -1,7 +1,6 @@
 #include "Request.hpp"
 
 Request::Request() :
-    _HttpRequestStatus(InProgress),
     _requestContent(""), 
     _method(NONE),
     _path(""),
@@ -9,11 +8,12 @@ Request::Request() :
     _headers(),
     _body(""),
     _chunks("") {
+        _headersRead = false;
         _firstLineCheck = false;
         _requestComplete = false;
+        _chunkSize = -1;
 }
 
-void Request::Status(HttpRequestStatus HttpRequestStatus) { _HttpRequestStatus = HttpRequestStatus; }
 void Request::SetFirstLineCheck(bool firstLineCheck) { _firstLineCheck = firstLineCheck; }
 void Request::ReadFurther(bool requestComplete) { _requestComplete = requestComplete; }
 void Request::AreHeadersFinished(bool headersRead) { _headersRead = headersRead; }
@@ -27,9 +27,9 @@ void Request::SetVersion(std::string& version) { _version = version; }
 void Request::SetHeader(const std::string& headerName, const std::string& headerValue) { _headers[headerName] = headerValue; }
 void Request::SetBody(const std::string& partBody) { _body += partBody; }
 void Request::SetChunk(const std::string& chunk) { _chunks += chunk; }
+void Request::SetChunkSize(const int chunkSize) { _chunkSize = chunkSize; }
 
 
-HttpRequestStatus Request::Status(void) const { return _HttpRequestStatus; } 
 bool Request::GetFirstLineCheck(void) const { return _firstLineCheck; }
 bool Request::ReadFurther(void) const { return _requestComplete; }
 bool Request::AreHeadersFinished(void) const { return _headersRead; }
@@ -43,3 +43,4 @@ bool Request::HasHeader(const std::string& headerName) const { return _headers.f
 const std::string& Request::GetHeader(const std::string& headerName) { return _headers[headerName]; }
 const std::string& Request::GetBody(void) const { return _body; }
 const std::string& Request::GetChunk(void) const { return _chunks; }
+int Request::GetChunkSize(void) const { return _chunkSize; }

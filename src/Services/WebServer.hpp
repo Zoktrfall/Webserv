@@ -1,25 +1,11 @@
 #ifndef HTTP_SERVERS_HPP
 #define HTTP_SERVERS_HPP
-#include <iostream>
-#include <string>
-#include <vector>
-#include <fcntl.h>
 #include "ServersData.hpp"
 #include "ISocketsController.hpp"
 #include "IWebServerController.hpp"
 #include "HttpController.hpp"
-
-struct ServerSocket
-{
-    struct sockaddr_in ServerAddress;
-    int serverSocket;
-};
-
-struct ClientSocket
-{
-    int clientSocket;
-    bool IsChunked;
-};
+#include "HttpTypes.hpp"
+#include "Logger.hpp"
 
 class WebServer : public HttpController, IWebServerController, ISocketsController
 {
@@ -40,6 +26,12 @@ class WebServer : public HttpController, IWebServerController, ISocketsControlle
         void ReadSockets(fd_set& ReadFDS);
         void ServerSockets(fd_set& WriteFDS);
         void InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS);
+
+        void CheckTimeout(void);
+
+        void CloseConnection(std::vector<ClientSocket>& sockets, int index);
+        void CloseConnection(std::vector<int>& sockets, int index);
+        void MoveSocketFromReadToWrite(int index);
 };
 
 #endif

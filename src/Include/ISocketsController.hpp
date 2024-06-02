@@ -2,8 +2,10 @@
 #define I_SOCKETS_CONTROLLER_HPP
 #include <unistd.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <iostream>
+#include <vector>
+#include <fcntl.h>
 
 class ISocketsController
 {

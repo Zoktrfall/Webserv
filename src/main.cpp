@@ -1,7 +1,7 @@
-#include <iostream>
-#include <string>
+#include <signal.h>
 #include "WebServer.hpp"
 
+void sigpipeHandle(int sig) { if(sig){} }
 int main(int argc, char* argv[])
 {
     if (argc > 2)
@@ -10,8 +10,8 @@ int main(int argc, char* argv[])
         return 0;
     }   
         
+    signal(SIGPIPE, sigpipeHandle);
     WebServer mainServer(argv[1]);
     mainServer.RunWebServer();
-    // system("leaks webserv");
     return 0;
 }

@@ -1,5 +1,4 @@
 #include "HttpController.hpp"
-// #include <fstream>
 
 bool HttpController::CheckRequestIn(int socketId) { return _requests.count(socketId) > 0 ? true : false; }
 void HttpController::CreateNewRequest(int socketId) { _requests[socketId] = Request(); _requests[socketId].SetSocketId(socketId); }
@@ -59,7 +58,7 @@ void HttpController::ParseRequestHeaders(Request& request)
     request.SetRequestContent(newRequestContent);
     request.AreHeadersFinished(true);
 }
-void HttpController::ParseBody(Request& request)
+RequestResult HttpController::ParseBody(Request& request)
 {
     int contentLength = std::atoi(request.GetHeader("content-length").c_str());
     std::string tmpRequestContent = request.GetRequestContent();
@@ -69,91 +68,94 @@ void HttpController::ParseBody(Request& request)
         request.SetBody(tmpRequestContent.substr(0, contentLength));
     else if (currentLength < contentLength)
     {
-        tmpRequestContent += Tools::Recv(request.GetSocketId(), contentLength - currentLength);
-        request.SetBody(tmpRequestContent);
+        char requestBuffer[LimitRequestBody];
+        RequestResult recvResult = Tools::Recv(request.GetSocketId(), requestBuffer, LimitRequestBody);
+        if(recvResult != Success)
+            return recvResult;
+        request.SetBody(tmpRequestContent + std::string(requestBuffer));
     }
     else
         request.SetBody(tmpRequestContent);
 
-    request.Status(Completed);
+    return Success;
 }
-void HttpController::ParseChunked(Request& request)
+RequestResult HttpController::ParseChunked(Request& request)
 {
     while(request.GetRequestContent().find("0\r\n\r\n") == std::string::npos)
-       request.AppendRequestContent(Tools::Recv(request.GetSocketId(), RECV_SIZE));
+    {
+        char requestBuffer[RecvSize];
+        RequestResult recvResult = Tools::Recv(request.GetSocketId(), requestBuffer, RecvSize);
+        if(recvResult != Success)
+            return recvResult;
+        request.AppendRequestContent(std::string(requestBuffer));
+    }
 
     std::string requestContent = request.GetRequestContent();
     std::string block = requestContent.substr(0, requestContent.find("\r\n"));
 
-    int blockSize = static_cast<int>(std::strtol(block.c_str(), NULL, 16));
-    if(blockSize == 0)
-    {
-        request.Status(Completed);
-        return;
-    }
+    if(request.GetChunkSize() == -1)
+        request.SetChunkSize(static_cast<int>(std::strtol(block.c_str(), NULL, 16)));
 
     // Why am I adding 2 and 4 because when I use .find("0\r\n\r\n") 
     // it removes the line that doesn't have \r\n in it after 
     // I need to skip \r\n the chunk, that's why I plus 2 and 4
-    request.SetChunk(requestContent.substr(block.length() + 2, blockSize));
-    std::string newRequestContent = requestContent.substr(blockSize + block.length() + 4);
+    request.SetChunk(requestContent.substr(block.length() + 2, request.GetChunkSize()));
+    std::string newRequestContent = requestContent.substr(request.GetChunkSize() + block.length() + 4);
+
+    block = newRequestContent.substr(0, newRequestContent.find("\r\n"));
+    int blockSize = static_cast<int>(std::strtol(block.c_str(), NULL, 16));
+    if(blockSize == 0)
+        return Success;
+
+    request.SetChunkSize(blockSize);
     request.SetRequestContent(newRequestContent);
-    request.Status(InProgress);
+    return Chunked;
 }
-bool HttpController::ProcessHTTPRequest(int socketId)
+RequestResult HttpController::ProcessHTTPRequest(int socketId)
 {
+    RequestResult requestResult = Success;
     while(!_requests[socketId].ReadFurther())
-    {   
-        _requests[socketId].AppendRequestContent(Tools::Recv(socketId, RECV_SIZE));
+    {
+        char requestBuffer[RecvSize];
+        requestResult = Tools::Recv(socketId, requestBuffer, RecvSize);
+        if(requestResult != Success)
+            return requestResult;
+
+        _requests[socketId].AppendRequestContent(std::string(requestBuffer));
         if(_requests[socketId].GetRequestContent().find("\r\n\r\n") != std::string::npos)
             _requests[socketId].ReadFurther(true);
     }
+
     if(!_requests[socketId].AreHeadersFinished())
         ParseRequestHeaders(_requests[socketId]);
 
     if(_requests[socketId].HasHeader("content-length"))
-        ParseBody(_requests[socketId]);
+        requestResult = ParseBody(_requests[socketId]);
     else if(_requests[socketId].HasHeader("transfer-encoding") &&
         !_requests[socketId].GetHeader("transfer-encoding").compare("chunked"))
-        ParseChunked(_requests[socketId]);
-    else
-        _requests[socketId].Status(Completed);
-
-
-
-    // std::cout<<_requests[socketId].GetMethod()<<std::endl;
-    // std::cout<<_requests[socketId].GetPath()<<std::endl;
-    // std::cout<<_requests[socketId].GetVersion()<<std::endl;
-    // _requests[socketId].printHeaders();
-    // std::cout<<_requests[socketId].GetBody()<<std::endl;
-    // std::cout<<_requests[socketId].GetChunk()<<std::endl;
+        requestResult = ParseChunked(_requests[socketId]);
     
-
-
-    return _requests[socketId].Status();
+    return requestResult;
 }
-
-
-bool HttpController::HttpRequest(int readSocket)
+RequestResult HttpController::HttpRequest(int readSocket)
 {   
     if(!CheckRequestIn(readSocket))
         CreateNewRequest(readSocket);
-    return ProcessHTTPRequest(readSocket);
+
+    RequestResult requestResult = ProcessHTTPRequest(readSocket);
+    if(requestResult != Success && requestResult != Chunked)
+        _requests.erase(readSocket);
+
+    return requestResult;
 }
+
+
+
 
 void HttpController::HttpResponse(int readSocket) //* Needs some work *
 {
-    // const char *http_response = "HTTP/1.1 200 OK\r\nContent-Length: 12\r\n\r\nHello World!";
     const char *http_response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<!DOCTYPE html>\n<html>\n<head>\n<title>Welcome to nginx!</title>\n<style>\nhtml { color-scheme: light dark; }\nbody { width: 35em; margin: 0 auto; font-family: Tahoma, Verdana, Arial, sans-serif; }\n</style>\n</head>\n<body>\n<h1>Welcome to nginx!</h1>\n<p>If you see this page, the nginx web server is successfully installed and working. Further configuration is required.</p>\n<p>For online documentation and support please refer to <a href=\"http://nginx.org/\">nginx.org</a>.<br/>Commercial support is available at <a href=\"http://nginx.com/\">nginx.com</a>.</p>\n<p><em>Thank you for using nginx.</em></p>\n</body>\n</html>";
+    std::cout<<"Send: "<<send(readSocket, http_response, strlen(http_response), 0)<<std::endl;
 
-    send(readSocket, http_response, strlen(http_response), 0);
-
-
-
-
-
-
-
-    
     _requests.erase(readSocket);
 }

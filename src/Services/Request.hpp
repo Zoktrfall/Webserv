@@ -3,29 +3,13 @@
 #include <map>
 #include <string>
 #include <iostream>
-
-enum HttpRequestStatus
-{
-    InProgress,
-    Completed
-};
-
-enum HttpMethod
-{
-    GET,
-    POST,
-    DELETE,
-    PUT,
-    HEAD,
-    NONE
-};
+#include "HttpTypes.hpp"
 
 class Request
 {
     public :
         Request();
 
-        void Status(HttpRequestStatus status);
         void SetFirstLineCheck(bool firstLineCheck);
         void ReadFurther(bool requestComplete);
         void AreHeadersFinished(bool headersRead);
@@ -39,8 +23,8 @@ class Request
         void SetHeader(const std::string& headerName, const std::string& headerValue);
         void SetBody(const std::string& partBody);
         void SetChunk(const std::string& chunk);
+        void SetChunkSize(const int chunkSize);
 
-        HttpRequestStatus Status(void) const;
         bool GetFirstLineCheck(void) const;
         bool ReadFurther(void) const;
         bool AreHeadersFinished(void) const;
@@ -54,14 +38,9 @@ class Request
         bool HasHeader(const std::string& headerName) const;
         const std::string& GetBody(void) const;
         const std::string& GetChunk(void) const;
-
-        // void printHeaders() {
-        //     for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); ++it)
-        //         std::cout << it->first << ": " << it->second << std::endl;
-        // }
-
+        int GetChunkSize(void) const;
+        
     private :
-        HttpRequestStatus _HttpRequestStatus;
         bool _firstLineCheck;
         bool _requestComplete;
         bool _headersRead;
@@ -74,6 +53,7 @@ class Request
         std::map<std::string, std::string> _headers;
         std::string	_body;
         std::string _chunks;
+        int _chunkSize;
 };
 
 #endif
