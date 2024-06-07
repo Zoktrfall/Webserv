@@ -1,5 +1,5 @@
-#ifndef HTTP_SERVERS_HPP
-#define HTTP_SERVERS_HPP
+#ifndef WEB_SERVER_HPP
+#define WEB_SERVER_HPP
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>

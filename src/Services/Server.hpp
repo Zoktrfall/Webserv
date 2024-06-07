@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef SERVER_HPP
+#define SERVER_HPP
 #include <iostream>
 #include <string>
 #include <map>
@@ -12,7 +12,7 @@ class Server : public IServer
 	public:
 		Server(void);
 		Server(const Server&);
-		~Server(void);
+		~Server();
 
 		Server&	operator=(const Server&);
 		
@@ -43,3 +43,5 @@ class Server : public IServer
 		std::vector<location>			_locations;
 		std::vector<std::string>		_cgi;
 };
+
+#endif

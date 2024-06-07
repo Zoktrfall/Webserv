@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef I_CONFIG_PARSER_HPP
+#define I_CONFIG_PARSER_HPP
 #include <iostream>
 #include <string>
 #include "FileOperation.hpp"
@@ -7,7 +7,9 @@
 
 class IConfigParser {
 	public:
-		virtual ~IConfigParser(void) {}
+		virtual ~IConfigParser() {}
 
 		virtual std::vector<Server> parseConfigFile(const std::string&) = 0;
 };
+
+#endif

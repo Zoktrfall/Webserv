@@ -1,6 +1,6 @@
 #include "Request.hpp"
 
-Request::Request() :
+Request::Request(void) :
     _requestContent(""), 
     _method(NONE),
     _path(""),

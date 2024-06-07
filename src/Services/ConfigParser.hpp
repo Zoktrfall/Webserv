@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef CONFIG_PARSER_HPP
+#define CONFIG_PARSER_HPP
 #include <iostream>
 #include <string>
 #include <vector>
@@ -12,3 +12,5 @@ class ConfigParser : public IConfigParser {
 		std::vector<Server> parseConfigFile(const std::string&);
 
 };
+
+#endif

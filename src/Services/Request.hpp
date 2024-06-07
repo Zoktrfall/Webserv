@@ -8,7 +8,7 @@
 class Request
 {
     public :
-        Request();
+        Request(void);
 
         void ReadAllDataFromSocket(bool socketRead);
         void IsOverflow(bool overflow);

@@ -1,5 +1,5 @@
-#ifndef HTTP_TYPES_H
-#define HTTP_TYPES_H
+#ifndef HTTP_TYPES_HPP
+#define HTTP_TYPES_HPP
 #include <netinet/in.h>
 #include <ctime>
 

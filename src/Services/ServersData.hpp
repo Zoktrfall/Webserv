@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef SERVERS_DATA_HPP
+#define SERVERS_DATA_HPP
 #include <vector>
 #include <string>
 #include "Server.hpp"
@@ -11,7 +11,7 @@ class ServersData : public IServersData {
 		// ServersData(const std::string&);
 		ServersData(char*);
 		ServersData(const ServersData&);
-		~ServersData(void);
+		~ServersData();
 
 		ServersData& operator=(const ServersData&);
 
@@ -25,3 +25,5 @@ class ServersData : public IServersData {
 		
 		ServersData(void);
 };
+
+#endif
