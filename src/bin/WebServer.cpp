@@ -1,18 +1,16 @@
 #include "WebServer.hpp"
 
-WebServer::WebServer(char* configFilePath) : _serversData(configFilePath)
+WebServer::WebServer(char* configFilePath) : _serversData(configFilePath) //* Needs some work *
 {
     // if(!_serversData.IsOkay()) // //* Parts some work *
         // exit(0); // at this stage so far
 }
-
 void WebServer::RunWebServer()
 {
-    WebServer::CreateServer();
+    WebServer::SetupServer();
     WebServer::StartServer();
 }
-
-void WebServer::CreateServer(void) //* Needs some work *
+void WebServer::SetupServer(void) //* Needs some work *
 {
     /* Needs improvement, this is hard code */
     for (int i = 0; i < 5 /*_serversData.Lenght()*/ ; ++i) 
@@ -77,17 +75,12 @@ void WebServer::StartServer(void)
         InitializeFDSets(ReadFDS, WriteFDS);
         if(select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, &timer) < 0)
         {
-            if(errno != EPIPE)
-            {
-                std::cout<<strerror(errno)<<std::endl;
-                exit(1);
-            }
-            std::cout<<"error"<<std::endl;
-            continue;
+            std::cout<<"Error in Select"<<std::endl;
+            exit(1);
         }
-        WebServer::WriteSockets(WriteFDS);
-        WebServer::ReadSockets(ReadFDS);
         WebServer::ServerSockets(ReadFDS);   
+        WebServer::ReadSockets(ReadFDS);
+        WebServer::WriteSockets(WriteFDS);
         CheckTimeout();
     }
 }

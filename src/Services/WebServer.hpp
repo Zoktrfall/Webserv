@@ -26,7 +26,7 @@ class WebServer : public HttpController, IWebServerController, ISocketsControlle
         std::vector<int> _writeSockets;
         int _maxAvailableFD;
 
-        void CreateServer(void);
+        void SetupServer(void);
         void StartServer(void);
 
         void WriteSockets(fd_set& WriteFDS);

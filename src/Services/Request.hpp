@@ -10,13 +10,12 @@ class Request
     public :
         Request();
 
-        void SetFirstLineCheck(bool firstLineCheck);
-        void ReadFurther(bool requestComplete);
-        void AreHeadersFinished(bool headersRead);
+        void ReadAllDataFromSocket(bool socketRead);
+        void IsOverflow(bool overflow);
         void AppendRequestContent(std::string partRequestContent);
-        void SetRequestContent(std::string& requestContent);
+        void SetRequestContent(std::string requestContent);
+        void ClearRequestContent(void);
 
-        void SetSocketId(const int socketId);
         void SetMethod(HttpMethod method);
         void SetPath(std::string& path);
         void SetVersion(std::string& version);
@@ -25,12 +24,10 @@ class Request
         void SetChunk(const std::string& chunk);
         void SetChunkSize(const int chunkSize);
 
-        bool GetFirstLineCheck(void) const;
-        bool ReadFurther(void) const;
-        bool AreHeadersFinished(void) const;
+        bool ReadAllDataFromSocket(void) const;
+        bool IsOverflow(void);
         const std::string& GetRequestContent(void) const;
 
-        int GetSocketId(void) const;
         HttpMethod GetMethod(void) const;
         const std::string& GetPath(void) const;
         const std::string& GetVersion(void) const;
@@ -41,11 +38,9 @@ class Request
         int GetChunkSize(void) const;
         
     private :
-        bool _firstLineCheck;
-        bool _requestComplete;
-        bool _headersRead;
+        bool _socketRead;
+        bool _overFlow;
         std::string _requestContent;
-        int _socketId;
 
         HttpMethod _method;
         std::string _path;
