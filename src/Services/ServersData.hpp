@@ -1,29 +1,19 @@
 #ifndef SERVERS_DATA_HPP
 #define SERVERS_DATA_HPP
-#include <vector>
-#include <string>
 #include "Server.hpp"
-#include "IServersData.hpp"
-#include "ConfigParser.hpp"
+#include "ConfigFile.hpp"
+#include "ServerDataExc.hpp"
 
-class ServersData : public IServersData {
+class ServersData
+{
 	public:
-		// ServersData(const std::string&);
-		ServersData(char*);
-		ServersData(const ServersData&);
-		~ServersData();
-
-		ServersData& operator=(const ServersData&);
-
-		const std::vector<Server>&	getServers(void)	const;
-		void						setServers(const std::vector<Server>&);
-		inline bool					isOkay(void)		const;
+		ServersData(const char* configFilePath);
+		bool SetupServersData(void);
 		
 	private:
-		bool					_isOkay;
-		std::vector<Server>		_servers;
-		
-		ServersData(void);
+		ConfigFile _configFile;
+		std::string	_content;
+		// std::vector<Server>	 _servers;
 };
 
 #endif

@@ -1,15 +1,21 @@
 #include "WebServer.hpp"
 
-WebServer::WebServer(char* configFilePath) : _serversData(configFilePath) //* Needs some work *
-{
-    // if(!_serversData.IsOkay()) // //* Parts some work *
-        // exit(0); // at this stage so far
-}
+WebServer::WebServer(char* configFilePath) : _serversData(configFilePath) {}
 void WebServer::RunWebServer()
 {
+    WebServer::InitializeData();
     WebServer::SetupServer();
     WebServer::StartServer();
 }
+
+void WebServer::InitializeData(void)
+{
+    if(!_serversData.SetupServersData())
+        exit(1);
+    std::cout<<"Success"<<std::endl;
+    exit(0);
+}
+
 void WebServer::SetupServer(void) //* Needs some work *
 {
     /* Needs improvement, this is hard code */
@@ -62,7 +68,6 @@ void WebServer::SetupServer(void) //* Needs some work *
         }
     }
 }
-
 void WebServer::StartServer(void)
 {
     fd_set	ReadFDS, WriteFDS;
@@ -94,7 +99,6 @@ void WebServer::WriteSockets(fd_set& WriteFDS)
             CloseConnection(_writeSockets, i);
         }
 }
-
 void WebServer::ReadSockets(fd_set& ReadFDS)
 {
     for(size_t i = 0; i < _readSockets.size(); ++i)
@@ -117,7 +121,6 @@ void WebServer::ReadSockets(fd_set& ReadFDS)
                 MoveSocketFromReadToWrite(i);
         }
 }
-
 void WebServer::ServerSockets(fd_set& ReadFDS)
 {
     for(size_t i = 0; i < _serverSockets.size(); ++i)
@@ -143,7 +146,6 @@ void WebServer::ServerSockets(fd_set& ReadFDS)
                 std::cout<<"-->Error accepting new connection"<<std::endl;
         }
 }
-
 void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
 {
     FD_ZERO(&WriteFDS);
@@ -181,19 +183,16 @@ void WebServer::CheckTimeout(void)
             CloseConnection(_readSockets, i);
         }
 }
-
 void WebServer::CloseConnection(std::vector<ClientSocket>& sockets, int index) 
 {
     close(sockets[index].clientSocket);
     sockets.erase(sockets.begin() + index);
 }
-
 void WebServer::CloseConnection(std::vector<int>& sockets, int index) 
 {
     close(sockets[index]);
     sockets.erase(sockets.begin() + index);
 }
-
 void WebServer::MoveSocketFromReadToWrite(int index)
 {
     _writeSockets.push_back(_readSockets[index].clientSocket);
