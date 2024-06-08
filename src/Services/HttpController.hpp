@@ -18,6 +18,7 @@ class HttpController : public IHttpController
         void HttpResponse(int writeSocket);
 
         virtual ~HttpController() {};
+        
     private :
         std::map<int, Request> _requests;
 

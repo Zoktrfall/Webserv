@@ -14,7 +14,8 @@
 #define LightMagenta "\x1B[95m"
 #define GulfStandardTime 4;
 
-enum LogPrio{
+enum LogPrio
+{
     DEBUG,
     INFO,
     ERROR
@@ -24,6 +25,7 @@ class Logger
 {
     public:
         static void logMsg();
+
     private:
         static std::string getCurrTime(void);
 

@@ -14,6 +14,7 @@ class Tools
         static std::string& Trim(std::string& str, const std::string& trimmerStr);
         static RequestResult Recv(int socketId, char* requestBuffer);
         static std::string ToString(int value);
+    
     private:
 };
 

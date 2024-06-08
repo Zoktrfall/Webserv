@@ -14,6 +14,7 @@ class ServerDataExc : public std::exception
         ~ServerDataExc() throw () {}
         ServerDataExc(const std::string& errorMessage);
         virtual const char* what(void) const throw();
+        
     private :
         std::string _errorMessage;
 };
