@@ -2,12 +2,15 @@
 
 ServersData::ServersData(const char* configFilePath) : _configFile(configFilePath) {}
 
-bool ServersData::SetupServersData(void)
+bool ServersData::SetupServersData(void)  //* Needs some work *
 {
     try
     {
         _content = _configFile.ProcessConfigFile();
-        std::cout<<_content<<std::endl;
+
+        ConfigParser::removeComments(Tools::Trim(_content, WhiteSpaces));
+        ConfigParser::parseServerBlocks(_content);
+
     }
     catch(const ServerDataExc& exp)
     {

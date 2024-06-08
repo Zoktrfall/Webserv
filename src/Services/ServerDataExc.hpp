@@ -3,10 +3,12 @@
 #include <stdexcept>
 #include <string>
 
-#define NotFileMessage "The argument is not a file"
+#define ENotFile "The argument is not a file"
 #define EStats "Error getting file stats"
 #define EAcces "Permission denied"
 #define EOpenFile "Unable to open file"
+#define EFServer "No 'server' block found"
+#define EScope "Problem with scope"
 
 class ServerDataExc : public std::exception
 {

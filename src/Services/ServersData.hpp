@@ -3,8 +3,10 @@
 #include "Server.hpp"
 #include "ConfigFile.hpp"
 #include "ServerDataExc.hpp"
+#include "ConfigParser.hpp"
+#include "Tools.hpp"
 
-class ServersData
+class ServersData : public ConfigParser //* Needs some work *
 {
 	public:
 		ServersData(const char* configFilePath);

@@ -8,7 +8,7 @@ void WebServer::RunWebServer()
     WebServer::StartServer();
 }
 
-void WebServer::InitializeData(void)
+void WebServer::InitializeData(void) //* Needs some work *
 {
     if(!_serversData.SetupServersData())
         exit(1);
@@ -121,13 +121,13 @@ void WebServer::ReadSockets(fd_set& ReadFDS)
                 MoveSocketFromReadToWrite(i);
         }
 }
-void WebServer::ServerSockets(fd_set& ReadFDS)
+void WebServer::ServerSockets(fd_set& ReadFDS) //* Needs some work *
 {
     for(size_t i = 0; i < _serverSockets.size(); ++i)
         if(FD_ISSET(_serverSockets[i].serverSocket, &ReadFDS))
         {
             int clientSocket = accept(_serverSockets[i].serverSocket, NULL, NULL);
-            if (clientSocket != -1)
+            if(clientSocket != -1)
             {
                 if(fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
                 {
@@ -174,7 +174,7 @@ void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
     }
 }
 
-void WebServer::CheckTimeout(void)
+void WebServer::CheckTimeout(void) //* Needs some work *
 {
     for(size_t i = 0; i < _readSockets.size(); ++i)
         if(time(NULL) - _readSockets[i].lastTime > ConnectionTemeOut)
