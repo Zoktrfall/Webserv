@@ -3,21 +3,19 @@
 WebServer::WebServer(char* configFilePath) : _serversData(configFilePath) {}
 void WebServer::RunWebServer()
 {
-    WebServer::InitializeData();
     WebServer::SetupServer();
     WebServer::StartServer();
 }
 
-void WebServer::InitializeData(void) //* Needs some work *
+void WebServer::SetupServer(void) //* Needs some work *
 {
     if(!_serversData.SetupServersData())
         exit(1);
     std::cout<<"Success"<<std::endl;
     exit(0);
-}
 
-void WebServer::SetupServer(void) //* Needs some work *
-{
+
+
     /* Needs improvement, this is hard code */
     for (int i = 0; i < 5 /*_serversData.Lenght()*/ ; ++i) 
     {

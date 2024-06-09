@@ -1,6 +1,5 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
-#include <iostream>
 #include <string>
 #include <map>
 #include <arpa/inet.h>
@@ -9,6 +8,7 @@
 class Server
 {
 	public :
+		Server(void);
 
 	private :
 		int	_port;
@@ -18,10 +18,12 @@ class Server
 		unsigned long _client_max_body_size;
 		std::string	_index;
 		bool _autoindex;
-		std::map<short, std::string> _error_pages;
+		std::map<int, std::string> _error_pages;
 		std::vector<Location> _locations;
         struct sockaddr_in _server_address;
         int _listen_fd;
+
+		void initErrorPages(void);
 };
 
 #endif

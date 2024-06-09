@@ -6,7 +6,6 @@ class IWebServerController
     public :
         virtual ~IWebServerController() {};
         virtual void RunWebServer(void) = 0;
-        virtual void InitializeData(void) = 0;
         virtual void SetupServer(void) = 0;
         virtual void StartServer(void) = 0;
 };
