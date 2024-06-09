@@ -4,7 +4,7 @@
 #include <vector>
 #include "ServerDataExc.hpp"
 
-class ConfigParser  //* Needs some work *
+class ConfigParser
 {
     public :
 		virtual ~ConfigParser() {};
@@ -12,11 +12,11 @@ class ConfigParser  //* Needs some work *
         void removeComments(std::string& content);
         void parseServerBlocks(std::string &content);
 
-        size_t findStartServer(size_t start, std::string &content);
-		size_t findEndServer(size_t start, std::string &content);
-
     private :
         std::vector<std::string> _serverBlocks;
+
+        size_t findStartBlock(size_t start, std::string &content);
+		size_t findEndBlock(size_t start, std::string &content);
 };
 
 #endif

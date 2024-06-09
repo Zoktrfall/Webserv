@@ -21,7 +21,7 @@ enum LogPrio
     ERROR
 };
 
-class Logger //* Needs some work *
+class Logger
 {
     public:
         static void logMsg();

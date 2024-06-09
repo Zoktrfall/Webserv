@@ -9,6 +9,7 @@
 #define EOpenFile "Unable to open file"
 #define EFServer "No 'server' block found"
 #define EScope "Problem with scope"
+#define EOutScope "Wrong character out of server scope{}"
 
 class ServerDataExc : public std::exception
 {

@@ -6,7 +6,7 @@
 #include "ConfigParser.hpp"
 #include "Tools.hpp"
 
-class ServersData : public ConfigParser //* Needs some work *
+class ServersData : public ConfigParser
 {
 	public:
 		ServersData(const char* configFilePath);

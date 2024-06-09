@@ -1,13 +1,12 @@
 #include "ServersData.hpp"
 
-ServersData::ServersData(const char* configFilePath) : _configFile(configFilePath) {}
+ServersData::ServersData(const char* configFilePath) : _configFile(configFilePath), _content("") {}
 
 bool ServersData::SetupServersData(void)  //* Needs some work *
 {
     try
     {
         _content = _configFile.ProcessConfigFile();
-
         ConfigParser::removeComments(Tools::Trim(_content, WhiteSpaces));
         ConfigParser::parseServerBlocks(_content);
 
