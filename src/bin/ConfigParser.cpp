@@ -1,5 +1,4 @@
 #include "ConfigParser.hpp" 
-#include <iostream>
 
 void ConfigParser::removeComments(std::string& content)
 {
@@ -16,7 +15,7 @@ void ConfigParser::removeComments(std::string& content)
         pos = content.find('#');
     }
 }
-size_t ConfigParser::findStartBlock(size_t start, std::string &content)
+size_t ConfigParser::findStartBlock(size_t start, const std::string &content)
 {
 	size_t i = start;
 	for(; content[i]; i++)
@@ -37,7 +36,7 @@ size_t ConfigParser::findStartBlock(size_t start, std::string &content)
 		return i;
 	throw ServerDataExc(EOutScope);
 }
-size_t ConfigParser::findEndBlock(size_t start, std::string &content)
+size_t ConfigParser::findEndBlock(size_t start, const std::string &content)
 {
 	size_t scope = 0;
 	for(size_t i = start + 1; content[i]; i++)
@@ -53,7 +52,7 @@ size_t ConfigParser::findEndBlock(size_t start, std::string &content)
 	}
 	return start;
 }
-void ConfigParser::parseServerBlocks(std::string &content)
+void ConfigParser::parseServerBlocks(const std::string &content)
 {
 	size_t start = 0, end = 1;
 	if(content.find("server", 0) == std::string::npos)
@@ -67,5 +66,6 @@ void ConfigParser::parseServerBlocks(std::string &content)
 		_serverBlocks.push_back(content.substr(start, end - start + 1));
 		start = end + 1;
 	}
-	content.clear();
 }
+std::string ConfigParser::GetBlock(size_t index) const { return _serverBlocks[index]; }
+size_t ConfigParser::GetBlocksSize(void) const { return _serverBlocks.size(); }
