@@ -11,10 +11,9 @@ class Request
         Request(void);
 
         void ReadAllDataFromSocket(bool socketRead);
-        void IsOverflow(bool overflow);
         void AppendRequestContent(std::string partRequestContent);
         void SetRequestContent(std::string requestContent);
-        void ClearRequestContent(void);
+        void SetBoundaryKey(std::string boundaryKey);
 
         void SetMethod(HttpMethod method);
         void SetPath(std::string& path);
@@ -25,8 +24,8 @@ class Request
         void SetChunkSize(const int chunkSize);
 
         bool ReadAllDataFromSocket(void) const;
-        bool IsOverflow(void);
         const std::string& GetRequestContent(void) const;
+        const std::string& GetBoundaryKey(void) const;
 
         HttpMethod GetMethod(void) const;
         const std::string& GetPath(void) const;
@@ -36,11 +35,17 @@ class Request
         const std::string& GetBody(void) const;
         const std::string& GetChunk(void) const;
         int GetChunkSize(void) const;
+
+        void printMap() {
+            for (auto iter = _headers.begin(); iter != _headers.end(); ++iter) {
+                std::cout << iter->first << ": " << iter->second << std::endl;
+            }
+        }
         
+        std::string _requestContent;
     private :
         bool _socketRead;
-        bool _overFlow;
-        std::string _requestContent;
+        std::string _boundaryKey;
 
         HttpMethod _method;
         std::string _path;

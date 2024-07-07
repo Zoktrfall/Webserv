@@ -11,7 +11,8 @@ void WebServer::SetupServer(void) //* Needs some work *
 {
     if(!_serversData.SetupServersData())
         exit(1);
-    std::cout<<"Success"<<std::endl;
+    // for(int i = 0; i <_serversData.GetServers().size(); i++)
+        // std::cout<<_serversData.GetServers()[i].GetLocation(1).GetAlias()<<std::endl;
     exit(0);
 
 
@@ -100,7 +101,7 @@ void WebServer::WriteSockets(fd_set& WriteFDS)
 void WebServer::ReadSockets(fd_set& ReadFDS)
 {
     for(size_t i = 0; i < _readSockets.size(); ++i)
-        if(FD_ISSET(_readSockets[i].clientSocket, &ReadFDS) || _readSockets[i].IsChunked)
+        if(FD_ISSET(_readSockets[i].clientSocket, &ReadFDS)) //|| _readSockets[i].multypart)
         {
             RequestResult requestResult = HttpController::HttpRequest(_readSockets[i].clientSocket);
             if(requestResult == ClosedConnection)
@@ -114,7 +115,9 @@ void WebServer::ReadSockets(fd_set& ReadFDS)
                 return CloseConnection(_readSockets, i);
             }
             else if(requestResult == Chunked)
-                _readSockets[i].IsChunked = true;
+                std::cout<<"Chunked"<<std::endl;
+            else if(requestResult == Multipart)
+                std::cout<<"Multipart"<<std::endl;
             else
                 MoveSocketFromReadToWrite(i);
         }
@@ -136,7 +139,6 @@ void WebServer::ServerSockets(fd_set& ReadFDS) //* Needs some work *
 
                 ClientSocket newClient;
                 newClient.clientSocket = clientSocket;
-                newClient.IsChunked = false;
                 newClient.lastTime = time(NULL);
                 _readSockets.push_back(newClient);
             }

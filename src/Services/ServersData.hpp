@@ -12,6 +12,8 @@ class ServersData : public ConfigParser, IServersData
 	public:
 		ServersData(const char* configFilePath);
 		bool SetupServersData(void);
+
+		std::vector<Server>& GetServers(void);
 		
 	private:
 		ConfigFile _configFile;
@@ -19,8 +21,10 @@ class ServersData : public ConfigParser, IServersData
 		std::vector<Server>	_servers;
 
 		void LoadServers(void);
-		void CreateServer(std::string block, Server& server);
-		void CheckServers(void);
+		void CreateServer(std::string block, Server& Server);
+		void CheckServers(Server& Server);
+		void HasConflicts(void);
+		bool HasIntersection(const std::vector<uint16_t>& vec1, const std::vector<uint16_t>& vec2);
 };
 
 #endif

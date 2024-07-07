@@ -28,7 +28,7 @@ class HttpController : public IHttpController
         void ParseRequestHeaders(Request& request);
         void FirstRequestLine(const std::string& line, Request& request);
         void ParseHeaderLine(const std::string& line, Request& request);
-        void ParseBody(Request& request);
+        RequestResult ParseBody(Request& request);
         RequestResult ParseChunked(Request& request);
 };
 

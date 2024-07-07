@@ -8,6 +8,7 @@ enum RequestResult
     ClosedConnection,
     ReadError,
     Chunked,
+    Multipart,
     Success
 };
 
@@ -31,7 +32,6 @@ struct ClientSocket
 {
     int clientSocket;
     time_t lastTime;
-    bool IsChunked;
 };
 
 #endif

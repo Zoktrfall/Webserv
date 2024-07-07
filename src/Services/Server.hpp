@@ -2,7 +2,8 @@
 #define SERVER_HPP
 #include <string>
 #include <map>
-#include <arpa/inet.h>
+#include <cctype>
+#include "Tools.hpp"
 #include "Location.hpp"
 
 class Server
@@ -10,20 +11,53 @@ class Server
 	public :
 		Server(void);
 
+		void AddLocation(void);
+		void ClearDuplicates(void);
+		void SetupErrorPages(void); // Part setup "./www/errors/Example" + Tools::ToString(it->first) + ".html"
+
+		const std::vector<uint16_t>& GetPorts(void) const;
+		const std::string& GetRoot(void) const;
+		const std::string& GetHost(void) const;
+		const std::vector<std::string>& GetServerNames(void) const;
+		long long GetClientMaxBodySize(void) const;
+		int GetAutoIndex(void) const;
+		const std::vector<std::string>& GetIndices(void) const;
+		std::map<int, std::string> GetReturn(void) const;
+		Location& GetLocation(size_t i);
+		std::string GetErrorPage(int ErrorCode);
+		std::string GetUploadDir(void) const;
+
+
+		void SetPort(std::string& portStr);
+		void SetHost(std::string host);
+		void SetRoot(std::string& root);
+		void SetServerNames(std::string& serverName);
+		void SetClientMaxBodySize(std::string client_max_body_size);
+		void SetAutoIndex(std::string autoIndex);
+		void SetIndices(std::string indices);
+		void SetErrorPages(std::string& errorPage);
+		void SetReturn(std::string& ret);
+		void SetUploadDir(std::string upload_dir);
+
 	private :
-		int	_port;
-		in_addr_t _host;
-		std::string _server_name;
+		std::vector<uint16_t> _ports;
+		std::string _host;
+		std::vector<std::string> _server_names;
 		std::string	_root;
-		unsigned long _client_max_body_size;
-		std::string	_index;
-		bool _autoindex;
+		long long _client_max_body_size;
+		std::string _upload_dir;
+		int _autoindex;
+		std::map<int, std::string> _return;
+		std::vector<std::string> _indices;
 		std::map<int, std::string> _error_pages;
 		std::vector<Location> _locations;
         struct sockaddr_in _server_address;
         int _listen_fd;
 
-		void initErrorPages(void);
+		void InitErrorPages(void);
+		void IsValidIPv4(const std::string& host);
+		void RemoveDuplicates(std::vector<std::string>& vec);
+		void RemoveDuplicates(std::vector<Location>& vec);
 };
 
 #endif
