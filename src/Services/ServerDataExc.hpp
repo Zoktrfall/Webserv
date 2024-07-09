@@ -24,7 +24,7 @@
 #define EPortSyntax "Wrong syntax: listen"
 #define EPortDuplicate "Duplicated: port"
 #define EHost "Wrong syntax: host"
-#define EHostDuplicate "Duplicated: host"
+#define EHostIp "IP address in in_addr_t format: host"
 
 #define ERootSyntax "Wrong syntax: root"
 #define ERootDublicate "Duplicated: root"

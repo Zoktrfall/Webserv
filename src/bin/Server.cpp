@@ -38,6 +38,32 @@ void Server::ClearDuplicates(void)
 	RemoveDuplicates(_locations);
 }
 void Server::AddLocation(void) { _locations.push_back(Location()); }
+in_addr_t Server::ConvertStringToInAddrT(std::string ipAddress)
+{
+	std::vector<std::string> bytes;
+    std::string byte;
+    std::string::size_type pos = 0, nextPos = 0;
+
+	while((nextPos = ipAddress.find('.', pos)) != std::string::npos)
+	{
+        byte = ipAddress.substr(pos, nextPos - pos);
+        bytes.push_back(byte);
+        pos = nextPos + 1;
+    }
+
+    byte = ipAddress.substr(pos);
+    bytes.push_back(byte);
+    in_addr_t addr = 0;
+
+    for(size_t i = 0; i < 4; ++i)
+	{
+        int b = atoi(bytes[i].c_str());
+        addr = (addr << 8) | b;
+    }
+
+	in_addr_t inAddr htonl(addr);
+    return inAddr == INADDR_NONE ? throw ServerDataExc(EHostIp) : inAddr;
+}
 void Server::IsValidIPv4(const std::string& host)
 {
     std::istringstream ss(host);
@@ -91,22 +117,19 @@ void Server::InitErrorPages(void)
 }
 Server::Server(void) :
     _ports(),
-    _host(""),
+    _hosts(),
     _server_names(),
     _root(""),
     _client_max_body_size(-1),
 	_return(),
     _indices(),
     _autoindex(-1),
-    _locations(),
-    _listen_fd(-1) {
-        memset(&_server_address, 0, sizeof(_server_address));
+    _locations() {
         InitErrorPages();
 }
 
 const std::vector<uint16_t>& Server::GetPorts(void) const { return _ports; }
 const std::string& Server::GetRoot(void) const { return _root; }
-const std::string& Server::GetHost(void) const { return _host; }
 long long Server::GetClientMaxBodySize(void) const { return _client_max_body_size; }
 const std::vector<std::string>& Server::GetServerNames(void) const { return _server_names; }
 Location& Server::GetLocation(size_t i) { return _locations[i]; }
@@ -116,7 +139,6 @@ std::map<int, std::string> Server::GetReturn(void) const { return _return; }
 std::string Server::GetErrorPage(int ErrorCode) { return _error_pages[ErrorCode]; }
 std::string Server::GetUploadDir(void) const { return _upload_dir; }
 
-void Server::SetHost(std::string host) { _host = host; }
 void Server::SetPort(std::string& part)
 {
 	unsigned long port;
@@ -124,17 +146,20 @@ void Server::SetPort(std::string& part)
 	size_t colonPos = part.find(':');
 	if(colonPos != std::string::npos)
 	{
-		if(!_host.empty())
-			throw ServerDataExc(EHostDuplicate);
 		host = part.substr(0, colonPos);
 		if(host == "localhost")
 			host = "127.0.0.1";
 		Server::IsValidIPv4(host);
-		_host = host;
+		in_addr_t inAddr = ConvertStringToInAddrT(host);
+		_hosts.push_back(inAddr);
 		portStr = part.substr(colonPos + 1);
 	}
 	else
+	{
+		in_addr_t inAddr = ConvertStringToInAddrT("0.0.0.0");
+		_hosts.push_back(inAddr);
 		portStr = part;
+	}
 	
 	if(portStr.empty() || portStr.size() > 5 || !Tools::IsAllDigits(portStr))
 		throw ServerDataExc(EPortSyntax);

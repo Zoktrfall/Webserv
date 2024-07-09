@@ -30,7 +30,6 @@ void ServersData::LoadServers(void)
     if (_servers.size() > 1)
 		HasConflicts();
 }
-
 void ServersData::CreateServer(std::string block, Server& Server)
 {
     bool inLocation = false;
@@ -250,13 +249,10 @@ void ServersData::CreateServer(std::string block, Server& Server)
     }
     CheckServers(Server);
 }
-
 void ServersData::CheckServers(Server& Server)
 {
     if(!Server.GetPorts().size() || Server.GetRoot().empty())
         throw ServerDataExc(ERequiredParam);
-    if(Server.GetHost().empty())
-        Server.SetHost("127.0.0.1");
     if(!Server.GetIndices().size())
         Server.SetIndices("./www/html/index.html");
     if(Server.GetUploadDir().empty())
@@ -269,7 +265,6 @@ void ServersData::CheckServers(Server& Server)
     Server.SetupErrorPages();
     Server.ClearDuplicates();
 }
-
 bool ServersData::HasIntersection(const std::vector<uint16_t>& vec1, const std::vector<uint16_t>& vec2)
 {
     for(size_t i = 0; i < vec1.size(); ++i)
@@ -278,15 +273,13 @@ bool ServersData::HasIntersection(const std::vector<uint16_t>& vec1, const std::
                 return true;
     return false;
 }
-
 void ServersData::HasConflicts(void)
 {
 	std::vector<Server>::iterator it1, it2;
 
 	for(it1 = this->_servers.begin(); it1 != this->_servers.end() - 1; it1++)
 		for(it2 = it1 + 1; it2 != this->_servers.end(); it2++)
-			if(it1->GetHost() == it2->GetHost() || HasIntersection(it1->GetPorts(), it2->GetPorts()))
+			if(HasIntersection(it1->GetPorts(), it2->GetPorts()))
 				throw ServerDataExc(EServerSetup);
 }
-
 std::vector<Server>& ServersData::GetServers(void) { return _servers; }

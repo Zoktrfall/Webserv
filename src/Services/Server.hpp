@@ -17,7 +17,6 @@ class Server
 
 		const std::vector<uint16_t>& GetPorts(void) const;
 		const std::string& GetRoot(void) const;
-		const std::string& GetHost(void) const;
 		const std::vector<std::string>& GetServerNames(void) const;
 		long long GetClientMaxBodySize(void) const;
 		int GetAutoIndex(void) const;
@@ -27,9 +26,7 @@ class Server
 		std::string GetErrorPage(int ErrorCode);
 		std::string GetUploadDir(void) const;
 
-
 		void SetPort(std::string& portStr);
-		void SetHost(std::string host);
 		void SetRoot(std::string& root);
 		void SetServerNames(std::string& serverName);
 		void SetClientMaxBodySize(std::string client_max_body_size);
@@ -41,7 +38,7 @@ class Server
 
 	private :
 		std::vector<uint16_t> _ports;
-		std::string _host;
+		std::vector<in_addr_t> _hosts;
 		std::vector<std::string> _server_names;
 		std::string	_root;
 		long long _client_max_body_size;
@@ -51,11 +48,10 @@ class Server
 		std::vector<std::string> _indices;
 		std::map<int, std::string> _error_pages;
 		std::vector<Location> _locations;
-        struct sockaddr_in _server_address;
-        int _listen_fd;
 
 		void InitErrorPages(void);
 		void IsValidIPv4(const std::string& host);
+		in_addr_t ConvertStringToInAddrT(std::string ipAddress);
 		void RemoveDuplicates(std::vector<std::string>& vec);
 		void RemoveDuplicates(std::vector<Location>& vec);
 };

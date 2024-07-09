@@ -13,9 +13,8 @@ void WebServer::SetupServer(void) //* Needs some work *
         exit(1);
     // for(int i = 0; i <_serversData.GetServers().size(); i++)
         // std::cout<<_serversData.GetServers()[i].GetLocation(1).GetAlias()<<std::endl;
+    std::cout<<"Success"<<std::endl;
     exit(0);
-
-
 
     /* Needs improvement, this is hard code */
     for (int i = 0; i < 5 /*_serversData.Lenght()*/ ; ++i) 
