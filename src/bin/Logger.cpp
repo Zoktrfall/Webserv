@@ -10,22 +10,30 @@ std::string Logger::GetCurrTime(void)
     strftime(date, sizeof(date), "[%Y-%m-%d  %H:%M:%S]   ", &tm);
     return (std::string(date));
 }
-const char* Logger::SetColor(LogPrio prio)
+std::map<const char*, std::string> Logger::SetSetting(LogPrio prio)
 {
-    const char *color = NULL;
+    std::map<const char*, std::string> setting;
     if(prio == WARNING)
-        color = Yellow;
+        setting[Yellow] = "[WARNING]  ";
     else if(prio == INFO)
-        color = Cyan;
+        setting[Cyan] = "[INFO]  ";
     else if(prio == ERROR)
-        color = Red;
+        setting[Red] = "[ERROR]  ";
     else if(prio == DEBUG)
-        color = Blue;
-    return color;
+        setting[Blue] = "[DEBUG]  ";
+    return setting;
 }
 int Logger::LogMsg(LogPrio prio, const char* output)
 {
-    const char *color = SetColor(prio);
-    std::cout<<color<< GetCurrTime()<<output<<Reset<<std::endl;
+    std::map<const char*, std::string> setting = SetSetting(prio);
+    std::map<const char*, std::string>::reverse_iterator rit = setting.rbegin();
+    std::cout<<rit->first<<GetCurrTime()<<rit->second<<output<<Reset<<std::endl;
+    return 1;
+}
+int Logger::LogMsg(LogPrio prio, const char* output, int socketId)
+{
+    std::map<const char*, std::string> setting = SetSetting(prio);
+    std::map<const char*, std::string>::reverse_iterator rit = setting.rbegin();
+    std::cout<<rit->first<<GetCurrTime()<<rit->second<<output<<" [SocketID:"<<socketId<<"]"<<Reset<<std::endl;
     return 1;
 }

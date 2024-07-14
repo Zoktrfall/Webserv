@@ -74,6 +74,7 @@ void WebServer::WriteSockets(fd_set& WriteFDS)
         if(FD_ISSET(_writeSockets[i], &WriteFDS))
         {
             HttpController::HttpResponse(_writeSockets[i]);
+            Logger::LogMsg(DEBUG, "Response Sent To Socket", _writeSockets[i]);
             CloseConnection(_writeSockets, i);
         }
 }
@@ -85,12 +86,12 @@ void WebServer::ReadSockets(fd_set& ReadFDS)
             RequestResult requestResult = HttpController::HttpRequest(_readSockets[i].clientSocket);
             if(requestResult == ClosedConnection)
             {
-                Logger::LogMsg(DEBUG, "Client Closed Connection");
+                Logger::LogMsg(DEBUG, "Client Closed Connection", _readSockets[i].clientSocket);
                 return CloseConnection(_readSockets, i);
             }
             else if(requestResult == ReadError)
             {
-                Logger::LogMsg(WARNING, "Error reading from socket");
+                Logger::LogMsg(WARNING, "Error reading from socket", _readSockets[i].clientSocket);
                 return CloseConnection(_readSockets, i);
             }
             else if(requestResult == Multipart || requestResult == Chunked)
@@ -109,7 +110,7 @@ void WebServer::ServerSockets(fd_set& ReadFDS)
             {
                 if(fcntl(clientSocket, F_SETFL, O_NONBLOCK) == -1)
                 {
-                    Logger::LogMsg(WARNING, "Failed to get flags for client socket");
+                    Logger::LogMsg(WARNING, "Failed to get flags for client socket",  _readSockets[i].clientSocket);
                     close(clientSocket);
                     return ;
                 }
@@ -119,9 +120,10 @@ void WebServer::ServerSockets(fd_set& ReadFDS)
                 newClient.clientSocket = clientSocket;
                 newClient.lastTime = time(NULL);
                 _readSockets.push_back(newClient);
+                Logger::LogMsg(DEBUG, "Connection accepted", clientSocket);
             }
             else
-                Logger::LogMsg(WARNING, "Failed to accept connection");
+                Logger::LogMsg(WARNING, "Failed to accept connection",  _serverSockets[i].serverSocket);
         }
 }
 void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
@@ -156,17 +158,20 @@ void WebServer::CheckTimeout(void)
     for(size_t i = 0; i < _readSockets.size(); ++i)
         if(time(NULL) - _readSockets[i].lastTime > ConnectionTemeOut)
         {
-            Logger::LogMsg(DEBUG, "Client Timeout, Closing Connection..");
+            Logger::LogMsg(WARNING, "Client Timeout, Closing Connection..", _readSockets[i].clientSocket);
             CloseConnection(_readSockets, i);
         }
 }
 void WebServer::CloseConnection(std::vector<ClientSocket>& sockets, int index) 
 {
+    Logger::LogMsg(DEBUG, "Connection Closed.",  sockets[index].clientSocket);
     close(sockets[index].clientSocket);
     sockets.erase(sockets.begin() + index);
+
 }
 void WebServer::CloseConnection(std::vector<int>& sockets, int index) 
 {
+    Logger::LogMsg(DEBUG, "Connection Closed.",  sockets[index]);
     close(sockets[index]);
     sockets.erase(sockets.begin() + index);
 }
