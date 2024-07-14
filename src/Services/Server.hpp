@@ -13,9 +13,10 @@ class Server
 
 		void AddLocation(void);
 		void ClearDuplicates(void);
-		void SetupErrorPages(void); // Part setup "./www/errors/Example" + Tools::ToString(it->first) + ".html"
+		void SetupErrorPages(void);
 
 		const std::vector<uint16_t>& GetPorts(void) const;
+		const std::vector<in_addr_t>& GetHosts(void) const;
 		const std::string& GetRoot(void) const;
 		const std::vector<std::string>& GetServerNames(void) const;
 		long long GetClientMaxBodySize(void) const;

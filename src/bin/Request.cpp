@@ -2,32 +2,30 @@
 
 Request::Request(void) :
     _requestContent(""), 
+    _boundaryKey(""),
     _method(NONE),
     _path(""),
     _version(""),
     _headers(),
     _body(""),
-    _chunks(""),
-    _boundaryKey("") {
-        _socketRead = false;
+    _chunks("") {
         _chunkSize = -1;
 }
 
-void Request::ReadAllDataFromSocket(bool socketRead) { _socketRead = socketRead; }
 void Request::SetRequestContent(std::string requestContent) { _requestContent = requestContent; }
-void Request::AppendRequestContent(std::string partRequestContent) { _requestContent += partRequestContent; }
+void Request::AppendRequestContent(char* partRequestContent, int bytes) { _requestContent.append(partRequestContent, bytes); }
 void Request::SetBoundaryKey(std::string boundaryKey) { _boundaryKey = boundaryKey; }
+void Request::ClearContent(void) { _requestContent.clear(); }
 
 void Request::SetMethod(HttpMethod method) { _method = method; }
 void Request::SetPath(std::string& path) { _path = path; }
 void Request::SetVersion(std::string& version) { _version = version; }
 void Request::SetHeader(const std::string& headerName, const std::string& headerValue) { _headers[headerName] = headerValue; }
-void Request::SetBody(const std::string& partBody) { _body += partBody; }
-void Request::SetChunk(const std::string& chunk) { _chunks += chunk; }
+void Request::SetBody(const std::string& partBody) { _body.append(partBody); }
+void Request::SetChunk(const std::string& chunk) { _chunks.append(chunk); }
 void Request::SetChunkSize(const int chunkSize) { _chunkSize = chunkSize; }
 
 
-bool Request::ReadAllDataFromSocket(void) const { return _socketRead; }
 const std::string& Request::GetRequestContent(void) const { return _requestContent; }
 const std::string& Request::GetBoundaryKey(void) const { return _boundaryKey; }
 

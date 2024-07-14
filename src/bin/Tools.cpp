@@ -35,10 +35,10 @@ std::string& Tools::Trim(std::string& str, const std::string& trimmerStr)
 		str.clear();
 	return str;
 }
-RequestResult Tools::Recv(int socketId, char* requestBuffer)
+RequestResult Tools::Recv(int socketId, char* requestBuffer, int& bytesRead)
 {
     memset(requestBuffer, 0, MessageBuffer);
-    int bytesRead = recv(socketId, requestBuffer, MessageBuffer, 0);
+    bytesRead = recv(socketId, requestBuffer, MessageBuffer, 0);
     if(bytesRead == 0)
         return ClosedConnection;
     else if(bytesRead < 0 && !(errno == EAGAIN || errno == EWOULDBLOCK))

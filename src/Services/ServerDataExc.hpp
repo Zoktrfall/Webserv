@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <string>
 
-
 /* Errors related to the configuration file */
 #define ENotFile "Something is wrong with the configuration file"
 #define EAccess "Permission denied while accessing the configuration file"

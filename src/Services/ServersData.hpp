@@ -6,6 +6,7 @@
 #include "ServerDataExc.hpp"
 #include "ConfigParser.hpp"
 #include "Tools.hpp"
+#include "Logger.hpp"
 
 class ServersData : public ConfigParser, IServersData
 {

@@ -4,10 +4,11 @@ Location::Location(void) :
     _path(""),
     _root(""),
     _autoindex(-1),
+    _client_max_body_size(-1),
     _indices(),
     _return(),
+    _limit_except(),
     _alias(""),
-    _client_max_body_size(-1),
     _cgi_path(),
     _cgi_ext() {
 }

@@ -6,68 +6,51 @@ void WebServer::RunWebServer()
     WebServer::SetupServer();
     WebServer::StartServer();
 }
-
-void WebServer::SetupServer(void) //* Needs some work *
+void WebServer::SetupServer(void)
 {
+    Logger::LogMsg(INFO, "Reading and checking the configuration file");
     if(!_serversData.SetupServersData())
         exit(1);
-    // for(int i = 0; i <_serversData.GetServers().size(); i++)
-        // std::cout<<_serversData.GetServers()[i].GetLocation(1).GetAlias()<<std::endl;
-    std::cout<<"Success"<<std::endl;
-    exit(0);
 
-    /* Needs improvement, this is hard code */
-    for (int i = 0; i < 5 /*_serversData.Lenght()*/ ; ++i) 
+    Logger::LogMsg(INFO, "Initializing  Servers");
+    for(size_t i = 0; i < _serversData.GetServers().size(); ++i)
     {
-        int port = 9090 + i;
-
-
-        ServerSocket* server = new ServerSocket();
-        memset(&server->ServerAddress, 0, sizeof(server->ServerAddress));
-        server->serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-        if(server->serverSocket <= -1)
+        std::vector<uint16_t> ports = _serversData.GetServers()[i].GetPorts();
+        std::vector<in_addr_t> hosts = _serversData.GetServers()[i].GetHosts();
+        for(size_t j = 0; j < ports.size() && j < hosts.size(); ++j)
         {
-            std::cout<<"Error in <socket>"<<std::endl;
-            exit(0);
-        }
+            ServerSocket Server;
+            memset(&Server.serverAddress, 0, sizeof(Server.serverAddress));
+            Server.serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+            if(Server.serverSocket == -1)
+                exit(Logger::LogMsg(ERROR, strerror(errno)));
 
-        int optionValue = 1;
-	    if (setsockopt(server->serverSocket, SOL_SOCKET, SO_REUSEADDR, &optionValue, sizeof(int)) < 0)
-		    exit(1);
-    
-        server->ServerAddress.sin_family = AF_INET;
-        server->ServerAddress.sin_addr.s_addr = INADDR_ANY; // Need to Improve
-        server->ServerAddress.sin_port = htons(port);
-        _serverSockets.push_back(*server);
-    }
+            int optionValue = 1;
+	        if(setsockopt(Server.serverSocket, SOL_SOCKET, SO_REUSEADDR, &optionValue, sizeof(int)) == -1)
+                exit(Logger::LogMsg(ERROR, strerror(errno)));
 
+            Server.serverAddress.sin_family = AF_INET;
+            Server.serverAddress.sin_addr.s_addr = hosts[j];
+            Server.serverAddress.sin_port = htons(ports[j]);
 
-    for(int i = 0; i < 5; i++)
-        if(bind(_serverSockets[i].serverSocket, (struct sockaddr*)&_serverSockets[i].ServerAddress, 
-            sizeof(_serverSockets[i].ServerAddress)) == -1)
-        {
-            std::cout<<"Error in <bind>"<<std::endl;
-            exit(1);
-        }
+            if(bind(Server.serverSocket, (struct sockaddr*)&Server.serverAddress, 
+                sizeof(Server.serverAddress)) == -1)
+                exit(Logger::LogMsg(ERROR, strerror(errno)));
 
+            if(fcntl(Server.serverSocket, F_SETFL, O_NONBLOCK) < 0)
+                exit(Logger::LogMsg(ERROR, strerror(errno)));
 
-    for(int i = 0; i < 5; i++)
-    {
-        if(fcntl(_serverSockets[i].serverSocket, F_SETFL, O_NONBLOCK) < 0)
-        {   
-            std::cout<<"Error in fcntl"<<std::endl;
-            exit(1);
-        }
+            if(listen(Server.serverSocket, 1) == -1)
+                exit(Logger::LogMsg(ERROR, strerror(errno)));
 
-        if(listen(_serverSockets[i].serverSocket, 1) == -1)
-        {
-            std::cout<<"Error in <listen>"<<std::endl;
-            exit(1);
+            Server.serverIndex = i;
+            _serverSockets.push_back(Server);
         }
     }
 }
 void WebServer::StartServer(void)
 {
+    Logger::LogMsg(INFO, "Starting Miracle WebServer");
     fd_set	ReadFDS, WriteFDS;
     struct timeval timer;
 
@@ -77,17 +60,14 @@ void WebServer::StartServer(void)
         timer.tv_usec = 0;
         InitializeFDSets(ReadFDS, WriteFDS);
         if(select(_maxAvailableFD + 1, &ReadFDS, &WriteFDS, NULL, &timer) < 0)
-        {
-            std::cout<<"Error in Select"<<std::endl;
-            exit(1);
-        }
+            exit(Logger::LogMsg(ERROR, strerror(errno)));
+
         WebServer::ServerSockets(ReadFDS);   
         WebServer::ReadSockets(ReadFDS);
         WebServer::WriteSockets(WriteFDS);
         CheckTimeout();
     }
 }
-
 void WebServer::WriteSockets(fd_set& WriteFDS)
 {
     for(size_t i = 0; i < _writeSockets.size(); ++i)
@@ -100,28 +80,26 @@ void WebServer::WriteSockets(fd_set& WriteFDS)
 void WebServer::ReadSockets(fd_set& ReadFDS)
 {
     for(size_t i = 0; i < _readSockets.size(); ++i)
-        if(FD_ISSET(_readSockets[i].clientSocket, &ReadFDS)) //|| _readSockets[i].multypart)
+        if(FD_ISSET(_readSockets[i].clientSocket, &ReadFDS))
         {
             RequestResult requestResult = HttpController::HttpRequest(_readSockets[i].clientSocket);
             if(requestResult == ClosedConnection)
             {
-                std::cout<<"Client Closed Connection"<<std::endl;
+                Logger::LogMsg(DEBUG, "Client Closed Connection");
                 return CloseConnection(_readSockets, i);
             }
             else if(requestResult == ReadError)
             {
-                std::cout<<"Read Error"<<std::endl;
+                Logger::LogMsg(WARNING, "Error reading from socket");
                 return CloseConnection(_readSockets, i);
             }
-            else if(requestResult == Chunked)
-                std::cout<<"Chunked"<<std::endl;
-            else if(requestResult == Multipart)
-                std::cout<<"Multipart"<<std::endl;
+            else if(requestResult == Multipart || requestResult == Chunked)
+                _readSockets[i].lastTime = time(NULL);
             else
                 MoveSocketFromReadToWrite(i);
         }
 }
-void WebServer::ServerSockets(fd_set& ReadFDS) //* Needs some work *
+void WebServer::ServerSockets(fd_set& ReadFDS)
 {
     for(size_t i = 0; i < _serverSockets.size(); ++i)
         if(FD_ISSET(_serverSockets[i].serverSocket, &ReadFDS))
@@ -129,20 +107,21 @@ void WebServer::ServerSockets(fd_set& ReadFDS) //* Needs some work *
             int clientSocket = accept(_serverSockets[i].serverSocket, NULL, NULL);
             if(clientSocket != -1)
             {
-                if(fcntl(clientSocket, F_SETFL, O_NONBLOCK) < 0)
+                if(fcntl(clientSocket, F_SETFL, O_NONBLOCK) == -1)
                 {
-                    std::cout<<"-->Error accepting new connection"<<std::endl;
+                    Logger::LogMsg(WARNING, "Failed to get flags for client socket");
                     close(clientSocket);
                     return ;
                 }
 
                 ClientSocket newClient;
+                newClient.serverIndex = _serverSockets[i].serverIndex;
                 newClient.clientSocket = clientSocket;
                 newClient.lastTime = time(NULL);
                 _readSockets.push_back(newClient);
             }
             else
-                std::cout<<"-->Error accepting new connection"<<std::endl;
+                Logger::LogMsg(WARNING, "Failed to accept connection");
         }
 }
 void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
@@ -172,13 +151,12 @@ void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
         FD_SET(_writeSockets[i], &WriteFDS);
     }
 }
-
-void WebServer::CheckTimeout(void) //* Needs some work *
+void WebServer::CheckTimeout(void)
 {
     for(size_t i = 0; i < _readSockets.size(); ++i)
         if(time(NULL) - _readSockets[i].lastTime > ConnectionTemeOut)
         {
-            
+            Logger::LogMsg(DEBUG, "Client Timeout, Closing Connection..");
             CloseConnection(_readSockets, i);
         }
 }

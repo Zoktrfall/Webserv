@@ -24,12 +24,14 @@ enum HttpMethod
 
 struct ServerSocket 
 {
+    int serverIndex;
     int serverSocket;
-    struct sockaddr_in ServerAddress;
+    struct sockaddr_in serverAddress;
 };
 
 struct ClientSocket 
 {
+    int serverIndex;
     int clientSocket;
     time_t lastTime;
 };

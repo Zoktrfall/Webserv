@@ -13,12 +13,11 @@ bool ServersData::SetupServersData(void)
     }
     catch(const ServerDataExc& exp)
     {
-        std::cout<<exp.what()<<std::endl;
+        Logger::LogMsg(ERROR, exp.what());
         return false;
     }
     return true;
 }
-
 void ServersData::LoadServers(void)
 {
     for(size_t i = 0; i < ConfigParser::GetBlocksSize(); i++)

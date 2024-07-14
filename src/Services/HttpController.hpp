@@ -2,13 +2,13 @@
 #define HTTP_CONTROLLER_HPP
 #include <string>
 #include <sstream>
+#include <fstream>
 #include "IHttpController.hpp"
 #include "Request.hpp"
 #include "Tools.hpp"
 
 #define LimitHeaders 4096
-#define LimitRequest 365536
-#define MessageBuffer 40000
+#define MessageBuffer 1048576
 #define ConnectionTemeOut 60
 
 class HttpController : public IHttpController
@@ -28,6 +28,7 @@ class HttpController : public IHttpController
         void ParseRequestHeaders(Request& request);
         void FirstRequestLine(const std::string& line, Request& request);
         void ParseHeaderLine(const std::string& line, Request& request);
+        std::string ExtractBoundary(const std::string& contentType);
         RequestResult ParseBody(Request& request);
         RequestResult ParseChunked(Request& request);
 };

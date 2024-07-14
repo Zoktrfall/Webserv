@@ -1,10 +1,10 @@
 #include "WebServer.hpp"
 
-void SigPipeHandle(int sig) { if(sig){} }
+void SigPipeHandle(int sig) { if(sig){ Logger::LogMsg(WARNING, "Caught SIGPIPE signal");} }
 int main(int argc, char* argv[])
 {
     if(argc > 2)
-        std::cout<<"Too many arguments provided."<<std::endl;
+        Logger::LogMsg(ERROR, "Too many arguments provided.");
     else
     {
         signal(SIGPIPE, SigPipeHandle);

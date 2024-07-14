@@ -78,7 +78,7 @@ void Server::IsValidIPv4(const std::string& host)
         if(token.empty() || token.size() > 3)
 			throw ServerDataExc(EHost);
         
-        for(int i; i < token.size(); i++)
+        for(size_t i = 0; i < token.size(); i++)
             if(!std::isdigit(token[i]))
 				throw ServerDataExc(EHost);
         
@@ -91,11 +91,11 @@ void Server::IsValidIPv4(const std::string& host)
     if(dots != 4)
 		throw ServerDataExc(EHost);
 }
-void Server::SetupErrorPages(void) // Part setup "./www/errors/Example" + Tools::ToString(it->first) + ".html" 
+void Server::SetupErrorPages(void) 
 {	
 	for(std::map<int, std::string>::iterator it = _error_pages.begin(); it != _error_pages.end(); ++it)
         if(it->second.empty()) 
-            it->second = "./www/errors/Example" + Tools::ToString(it->first) + ".html";
+            it->second = "./www/errors/ErrorPage" + Tools::ToString(it->first) + ".html";
 }
 void Server::InitErrorPages(void)
 {
@@ -121,14 +121,16 @@ Server::Server(void) :
     _server_names(),
     _root(""),
     _client_max_body_size(-1),
+	_upload_dir(""),
+    _autoindex(-1),
 	_return(),
     _indices(),
-    _autoindex(-1),
     _locations() {
         InitErrorPages();
 }
 
 const std::vector<uint16_t>& Server::GetPorts(void) const { return _ports; }
+const std::vector<in_addr_t>& Server::GetHosts(void) const { return _hosts; }
 const std::string& Server::GetRoot(void) const { return _root; }
 long long Server::GetClientMaxBodySize(void) const { return _client_max_body_size; }
 const std::vector<std::string>& Server::GetServerNames(void) const { return _server_names; }
