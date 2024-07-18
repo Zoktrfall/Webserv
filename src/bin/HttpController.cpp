@@ -77,7 +77,7 @@ void HttpController::ParseRequestHeaders(Request& request)
 }
 RequestResult HttpController::ParseBody(Request& request)
 {
-    int contentLength = std::atoi(request.GetHeader("content-length").c_str());
+    int contentLength = atoi(request.GetHeader("content-length").c_str());
     request.SetBody(request.GetRequestContent().substr(0, contentLength));
 
     if(request.GetBoundaryKey() != "" && request.GetBody().rfind(request.GetBoundaryKey()) == std::string::npos)
@@ -153,6 +153,10 @@ RequestResult HttpController::HttpRequest(int readSocket)
 
 
 
+
+
+
+
 std::string ExtractFilename(const std::string& contentDisposition) {
     std::string filename;
     std::string key = "filename=";
@@ -177,8 +181,17 @@ std::string ExtractFilename(const std::string& contentDisposition) {
 
     return filename;
 }
+
+
+
 void HttpController::HttpResponse(int readSocket) //* Needs some work *
 {
+    std::cout<<_requests[readSocket].GetVersion()<<std::endl;
+    std::cout<<_requests[readSocket].GetMethod()<<std::endl;
+    std::cout<<_requests[readSocket].GetPath()<<std::endl;
+    _requests[readSocket].printMap();
+    std::cout<<_requests[readSocket].GetBody()<<std::endl;
+
     if(_requests[readSocket].GetRequestContent().length() > 100000000)
     {
         // std::cout<<"Code: 413"<<std::endl;

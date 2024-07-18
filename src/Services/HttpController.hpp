@@ -3,8 +3,10 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <cstdlib>
 #include "IHttpController.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
 #include "Tools.hpp"
 
 #define LimitHeaders 4096
@@ -21,6 +23,7 @@ class HttpController : public IHttpController
         
     private :
         std::map<int, Request> _requests;
+        Response _response;
 
         bool CheckRequestIn(int sokcetId);
         void CreateNewRequest(int socketId);

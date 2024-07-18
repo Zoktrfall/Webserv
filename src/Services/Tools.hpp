@@ -2,6 +2,7 @@
 #define TOOLS_HPP
 #include <string>
 #include <cstring>
+#include <vector>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <arpa/inet.h>

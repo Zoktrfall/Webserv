@@ -34,6 +34,12 @@ class Request
         const std::string& GetBody(void) const;
         const std::string& GetChunk(void) const;
         int GetChunkSize(void) const;
+
+        void printMap() {
+            for (auto iter = _headers.begin(); iter != _headers.end(); ++iter) {
+                std::cout << iter->first << ": " << iter->second << std::endl;
+            }
+        }
         
     private :
         std::string _requestContent;

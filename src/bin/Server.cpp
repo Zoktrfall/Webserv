@@ -61,7 +61,7 @@ in_addr_t Server::ConvertStringToInAddrT(std::string ipAddress)
         addr = (addr << 8) | b;
     }
 
-	in_addr_t inAddr htonl(addr);
+	in_addr_t inAddr = htonl(addr);
     return inAddr == INADDR_NONE ? throw ServerDataExc(EHostIp) : inAddr;
 }
 void Server::IsValidIPv4(const std::string& host)

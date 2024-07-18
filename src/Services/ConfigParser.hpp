@@ -2,6 +2,7 @@
 #define CONFIG_PARSER_HPP
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "Tools.hpp"
 #include "ServerDataExc.hpp"
 
