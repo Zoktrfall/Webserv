@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 #include <fcntl.h>
 #include <signal.h>
 #include "ServersData.hpp"

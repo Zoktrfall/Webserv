@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+#include <cstdlib>
 #include "IHttpController.hpp"
 #include "Request.hpp"
 #include "Tools.hpp"

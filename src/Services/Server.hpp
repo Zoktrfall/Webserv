@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <cctype>
+#include <algorithm>
 #include "Tools.hpp"
 #include "Location.hpp"
 

@@ -77,7 +77,7 @@ void HttpController::ParseRequestHeaders(Request& request)
 }
 RequestResult HttpController::ParseBody(Request& request)
 {
-    int contentLength = std::atoi(request.GetHeader("content-length").c_str());
+    int contentLength = atoi(request.GetHeader("content-length").c_str());
     request.SetBody(request.GetRequestContent().substr(0, contentLength));
 
     if(request.GetBoundaryKey() != "" && request.GetBody().rfind(request.GetBoundaryKey()) == std::string::npos)
@@ -190,7 +190,7 @@ void HttpController::HttpResponse(int readSocket) //* Needs some work *
 
         std::string filename = ExtractFilename(_requests[readSocket].GetHeader("content-disposition"));
         std::cout<<"filename: "<<filename<<std::endl;
-        std::ofstream outFile(filename);
+        std::ofstream outFile(filename.c_str());
         outFile << _requests[readSocket].GetBody();
         outFile.close(); // Закрываем файл
 
