@@ -108,7 +108,13 @@ void Server::InitErrorPages(void)
 	_error_pages[404] = "";
 	_error_pages[405] = "";
 	_error_pages[406] = "";
+	_error_pages[408] = "";
+	_error_pages[411] = "";
 	_error_pages[413] = "";
+	_error_pages[414] = "";
+	_error_pages[415] = "";
+	_error_pages[429] = "";
+	_error_pages[431] = "";
 	_error_pages[500] = "";
 	_error_pages[501] = "";
 	_error_pages[502] = "";

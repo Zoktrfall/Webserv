@@ -182,15 +182,35 @@ std::string ExtractFilename(const std::string& contentDisposition) {
     return filename;
 }
 
-
-
 void HttpController::HttpResponse(int readSocket) //* Needs some work *
 {
-    std::cout<<_requests[readSocket].GetVersion()<<std::endl;
-    std::cout<<_requests[readSocket].GetMethod()<<std::endl;
-    std::cout<<_requests[readSocket].GetPath()<<std::endl;
-    _requests[readSocket].printMap();
-    std::cout<<_requests[readSocket].GetBody()<<std::endl;
+    // std::cout<<_requests[readSocket].GetVersion()<<std::endl;
+    // std::cout<<_requests[readSocket].GetMethod()<<std::endl;
+    // std::cout<<_requests[readSocket].GetPath()<<std::endl;
+    // _requests[readSocket].printMap();
+    // std::cout<<_requests[readSocket].GetBody()<<std::endl;
+
+    // std::string filename = "./" + _requests[readSocket].GetPath();
+    // std::string filename = "./www/html/index.html";
+    // std::ifstream file(filename);
+    // if (!file.is_open()) {
+    //     std::cout<<"Не удалось открыть файл"<<std::endl;
+    // }
+
+    // std::stringstream buffer;
+    // buffer << file.rdbuf();
+    // std::cout<<Tools::ToString(buffer.str().size())<<std::endl;
+
+    // std::string str = "HTTP/1.1 200 OK\r\n"
+    //         "Content-Type: text/html\r\n"
+    //         "Content-Length: " + Tools::ToString(buffer.str().size()) + "\r\n" +  "Connection: close\r\n"
+    //         "\r\n" +
+    //         buffer.str();
+
+    // send(readSocket, str.c_str(), str.size(), 0);
+    // return;
+
+
 
     if(_requests[readSocket].GetRequestContent().length() > 100000000)
     {
