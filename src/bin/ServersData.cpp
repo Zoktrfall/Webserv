@@ -257,7 +257,7 @@ void ServersData::CheckServers(Server& Server)
     if(Server.GetUploadDir().empty())
         Server.SetUploadDir("./www/uploads");
     if(Server.GetClientMaxBodySize() == -1)
-        Server.SetClientMaxBodySize("365536");
+        Server.SetClientMaxBodySize("1m");
     if(Server.GetAutoIndex() == -1)
         Server.SetAutoIndex("off");
 

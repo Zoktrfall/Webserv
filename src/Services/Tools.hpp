@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include "ServerDataExc.hpp"
-#include "HttpController.hpp"
+#include "HttpRequestController.hpp"
 #include "HttpTypes.hpp"
 
 #define WhiteSpaces " \n\t\v\f\r"

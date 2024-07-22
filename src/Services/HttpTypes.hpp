@@ -36,4 +36,10 @@ struct ClientSocket
     time_t lastTime;
 };
 
+struct ResponseSocket
+{
+    int serverIndex;
+    int responseSocket;
+};
+
 #endif

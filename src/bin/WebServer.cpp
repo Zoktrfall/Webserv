@@ -71,10 +71,13 @@ void WebServer::StartServer(void)
 void WebServer::WriteSockets(fd_set& WriteFDS)
 {
     for(size_t i = 0; i < _writeSockets.size(); ++i)
-        if(FD_ISSET(_writeSockets[i], &WriteFDS))
+        if(FD_ISSET(_writeSockets[i].responseSocket, &WriteFDS))
         {
-            HttpController::HttpResponse(_writeSockets[i]);
-            Logger::LogMsg(DEBUG, "Response Sent To Socket", _writeSockets[i]);
+            _ResponseController.HttpResponse(_writeSockets[i].responseSocket,
+                                        _serversData.GetServers()[_writeSockets[i].serverIndex],
+                                        HttpRequestController::GetRequest(_writeSockets[i].responseSocket));
+            Logger::LogMsg(DEBUG, "Response Sent To Socket", _writeSockets[i].responseSocket);
+            HttpRequestController::ClearRequest(_writeSockets[i].responseSocket);
             CloseConnection(_writeSockets, i);
         }
 }
@@ -83,7 +86,7 @@ void WebServer::ReadSockets(fd_set& ReadFDS)
     for(size_t i = 0; i < _readSockets.size(); ++i)
         if(FD_ISSET(_readSockets[i].clientSocket, &ReadFDS))
         {
-            RequestResult requestResult = HttpController::HttpRequest(_readSockets[i].clientSocket);
+            RequestResult requestResult = HttpRequestController::HttpRequest(_readSockets[i].clientSocket);
             if(requestResult == ClosedConnection)
             {
                 Logger::LogMsg(DEBUG, "Client Closed Connection", _readSockets[i].clientSocket);
@@ -148,9 +151,9 @@ void WebServer::InitializeFDSets(fd_set& ReadFDS, fd_set& WriteFDS)
 
     for(size_t i = 0; i < _writeSockets.size(); ++i)
     {
-        if(_writeSockets[i] > _maxAvailableFD)
-            _maxAvailableFD = _writeSockets[i];
-        FD_SET(_writeSockets[i], &WriteFDS);
+        if(_writeSockets[i].responseSocket > _maxAvailableFD)
+            _maxAvailableFD = _writeSockets[i].responseSocket;
+        FD_SET(_writeSockets[i].responseSocket, &WriteFDS);
     }
 }
 void WebServer::CheckTimeout(void)
@@ -169,14 +172,18 @@ void WebServer::CloseConnection(std::vector<ClientSocket>& sockets, int index)
     sockets.erase(sockets.begin() + index);
 
 }
-void WebServer::CloseConnection(std::vector<int>& sockets, int index) 
+void WebServer::CloseConnection(std::vector<ResponseSocket>& sockets, int index) 
 {
-    Logger::LogMsg(DEBUG, "Connection Closed.",  sockets[index]);
-    close(sockets[index]);
+    Logger::LogMsg(DEBUG, "Connection Closed.",  sockets[index].responseSocket);
+    close(sockets[index].responseSocket);
     sockets.erase(sockets.begin() + index);
 }
 void WebServer::MoveSocketFromReadToWrite(int index)
 {
-    _writeSockets.push_back(_readSockets[index].clientSocket);
+    ResponseSocket newResponse;
+    newResponse.serverIndex = _readSockets[index].serverIndex;
+    newResponse.responseSocket = _readSockets[index].clientSocket;
+
+    _writeSockets.push_back(newResponse);
     _readSockets.erase(_readSockets.begin() + index);
 }

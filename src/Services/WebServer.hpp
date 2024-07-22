@@ -11,11 +11,12 @@
 #include "ServersData.hpp"
 #include "ISocketsController.hpp"
 #include "IWebServerController.hpp"
-#include "HttpController.hpp"
+#include "HttpRequestController.hpp"
+#include "HttpResponseController.hpp"
 #include "HttpTypes.hpp"
 #include "Logger.hpp"
 
-class WebServer : public HttpController, IWebServerController, ISocketsController
+class WebServer : public HttpRequestController, IWebServerController, ISocketsController
 {
     public : 
         WebServer(char* configFilePath);
@@ -23,9 +24,11 @@ class WebServer : public HttpController, IWebServerController, ISocketsControlle
         
     private : 
         ServersData _serversData;
+        HttpResponseController _ResponseController;
+
         std::vector<ServerSocket> _serverSockets;
         std::vector<ClientSocket> _readSockets;
-        std::vector<int> _writeSockets;
+        std::vector<ResponseSocket> _writeSockets;
         int _maxAvailableFD;
 
         void SetupServer(void);
@@ -39,7 +42,7 @@ class WebServer : public HttpController, IWebServerController, ISocketsControlle
         void CheckTimeout(void);
 
         void CloseConnection(std::vector<ClientSocket>& sockets, int index);
-        void CloseConnection(std::vector<int>& sockets, int index);
+        void CloseConnection(std::vector<ResponseSocket>& sockets, int index);
         void MoveSocketFromReadToWrite(int index);
 };
 

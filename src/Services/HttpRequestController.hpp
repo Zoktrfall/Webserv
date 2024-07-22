@@ -1,10 +1,10 @@
-#ifndef HTTP_CONTROLLER_HPP
-#define HTTP_CONTROLLER_HPP
+#ifndef HTTP_REQUEST_CONTROLLER_HPP
+#define HTTP_REQUEST_CONTROLLER_HPP
 #include <string>
 #include <sstream>
 #include <fstream>
 #include <cstdlib>
-#include "IHttpController.hpp"
+#include "IHttpRequestController.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Tools.hpp"
@@ -13,18 +13,18 @@
 #define MessageBuffer 1048576
 #define ConnectionTemeOut 60
 
-class HttpController : public IHttpController
+class HttpRequestController : public IHttpRequestController
 {
     public :
         RequestResult HttpRequest(int readSocket);
-        void HttpResponse(int writeSocket);
+        virtual ~HttpRequestController() {};
 
-        virtual ~HttpController() {};
+        Request& GetRequest(int index);
+        void ClearRequest(int index);
         
     private :
         std::map<int, Request> _requests;
-        Response _response;
-
+        
         bool CheckRequestIn(int sokcetId);
         void CreateNewRequest(int socketId);
         RequestResult ProcessHTTPRequest(int socketId);

@@ -2,8 +2,13 @@
 #define LOCATION_HPP
 #include <string>
 #include <vector>
+#include <map>
+#include <fstream>
+#include <cstdlib>
+#include <sstream>
+#include "Tools.hpp"
 #include "HttpTypes.hpp"
-#include "HttpController.hpp"
+#include "ServerDataExc.hpp"
 
 class Location
 {
