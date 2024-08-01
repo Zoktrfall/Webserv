@@ -23,10 +23,11 @@ class Server
 		long long GetClientMaxBodySize(void) const;
 		int GetAutoIndex(void) const;
 		const std::vector<std::string>& GetIndices(void) const;
+		std::string GetIndex(size_t i) const;
 		std::map<int, std::string> GetReturn(void) const;
 		Location& GetLocation(size_t i);
+		std::vector<Location> GetLocations(void) const; 
 		std::string GetErrorPage(int ErrorCode);
-		std::string GetUploadDir(void) const;
 
 		void SetPort(std::string& portStr);
 		void SetRoot(std::string& root);
@@ -36,7 +37,6 @@ class Server
 		void SetIndices(std::string indices);
 		void SetErrorPages(std::string& errorPage);
 		void SetReturn(std::string& ret);
-		void SetUploadDir(std::string upload_dir);
 
 	private :
 		std::vector<uint16_t> _ports;
@@ -44,7 +44,6 @@ class Server
 		std::vector<std::string> _server_names;
 		std::string	_root;
 		long long _client_max_body_size;
-		std::string _upload_dir;
 		int _autoindex;
 		std::map<int, std::string> _return;
 		std::vector<std::string> _indices;

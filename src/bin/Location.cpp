@@ -13,8 +13,8 @@ Location::Location(void) :
     _cgi_ext() {
 }
 
-const std::string Location::GetPath(void) const { return _path; }
-const std::string Location::GetRoot(void) const { return _root; }
+const std::string& Location::GetPath(void) const { return _path; }
+const std::string& Location::GetRoot(void) const { return _root; }
 int Location::GetAutoindex(void) const { return _autoindex; }
 const std::vector<std::string>& Location::GetIndices() const { return _indices; }
 std::string Location::GetAlias() const { return _alias; }
@@ -25,7 +25,7 @@ std::map<int, std::string> Location::GetReturn(void) const { return _return; }
 std::vector<HttpMethod> Location::GetLimitExcept(void) const { return _limit_except; }
 
 void Location::SetPath(std::string& path) { _path = path; }
-void Location::SetRoot(std::string& root) { _root = root; }
+void Location::SetRoot(std::string& root) { Tools::CheckRootOrLocation(_root, root, ERootSyntax); }
 void Location::SetClientMaxBodySize(std::string& client_max_body_size) { _client_max_body_size = Tools::CheckClientMaxBodySize(client_max_body_size); }
 void Location::SetAutoindex(std::string& autoIndex) { _autoindex = Tools::CheckAutoIndex(autoIndex); }
 void Location::SetIndices(std::string& indices) { _indices = Tools::CheckIndices(indices); }
@@ -75,8 +75,6 @@ void Location::SetLimitExcept(std::string& limits)
             _limit_except.push_back(POST);
         else if(method == "DELETE")
             _limit_except.push_back(DELETE);
-        else if(method == "PUT")
-            _limit_except.push_back(PUT);
         else if(method == "HEAD")
             _limit_except.push_back(HEAD);
         else

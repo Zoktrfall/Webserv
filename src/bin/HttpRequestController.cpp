@@ -14,8 +14,6 @@ void HttpRequestController::FirstRequestLine(const std::string& line, Request& r
         parsedMethod = POST;
     else if(method == "DELETE")
         parsedMethod = DELETE;
-    else if(method == "PUT")
-        parsedMethod = PUT;
     else if(method == "HEAD")
         parsedMethod = HEAD;
 
@@ -55,17 +53,16 @@ void HttpRequestController::ParseRequestHeaders(Request& request)
     std::string newRequestContent = request.GetRequestContent().substr(headersEndPos + 4);
     std::istringstream iss(headers);
     std::string line;
-    bool firstLineCheck = false;
 
     while(std::getline(iss, line))
     {   
         while(!line.empty() && (line[line.size() - 1] == '\r' || line[line.size() - 1] == '\n'))
             line.erase(line.size() - 1);
 
-        if(!firstLineCheck)
+        if(!request.FirstLineCheck())
         {
             FirstRequestLine(line, request);
-            firstLineCheck = true;
+            request.FirstLineCheck(true);
         }
         else if(line.find(":") != std::string::npos)
             ParseHeaderLine(line, request);

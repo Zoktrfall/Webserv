@@ -95,7 +95,11 @@ void Server::SetupErrorPages(void)
 {	
 	for(std::map<int, std::string>::iterator it = _error_pages.begin(); it != _error_pages.end(); ++it)
         if(it->second.empty()) 
-            it->second = "./www/errors/ErrorPage" + Tools::ToString(it->first) + ".html";
+		{
+			std::string path = "./www/errors/ErrorPage" + Tools::ToString(it->first) + ".html";
+			Tools::AccessStat(S_IFREG, R_OK, ENEPage, path);
+            it->second = path;
+		}
 }
 void Server::InitErrorPages(void)
 {
@@ -127,7 +131,6 @@ Server::Server(void) :
     _server_names(),
     _root(""),
     _client_max_body_size(-1),
-	_upload_dir(""),
     _autoindex(-1),
 	_return(),
     _indices(),
@@ -143,9 +146,10 @@ const std::vector<std::string>& Server::GetServerNames(void) const { return _ser
 Location& Server::GetLocation(size_t i) { return _locations[i]; }
 int Server::GetAutoIndex(void) const { return _autoindex; }
 const std::vector<std::string>& Server::GetIndices(void) const { return _indices; }
+std::string Server::GetIndex(size_t i) const { return _indices[i]; }
 std::map<int, std::string> Server::GetReturn(void) const { return _return; }
 std::string Server::GetErrorPage(int ErrorCode) { return _error_pages[ErrorCode]; }
-std::string Server::GetUploadDir(void) const { return _upload_dir; }
+std::vector<Location> Server::GetLocations(void) const { return _locations; }
 
 void Server::SetPort(std::string& part)
 {
@@ -181,7 +185,7 @@ void Server::SetPort(std::string& part)
 			throw ServerDataExc(EPortDuplicate);
 	_ports.push_back(static_cast<uint16_t>(port));
 }
-void Server::SetRoot(std::string& root) { _root = root; }
+void Server::SetRoot(std::string& root) { Tools::CheckRootOrLocation(_root, root, ERootSyntax); }
 void Server::SetServerNames(std::string& server_name)
 {
 	if(server_name.empty())
@@ -225,4 +229,3 @@ void Server::SetErrorPages(std::string& errorPage)
 	_error_pages[ErrorCode] = value;
 }
 void Server::SetReturn(std::string& ret) { _return = Tools::InitReturn(ret); }
-void Server::SetUploadDir(std::string upload_dir) { Tools::AccessStat(S_IFDIR, W_OK, EUDir, upload_dir); _upload_dir = upload_dir; }

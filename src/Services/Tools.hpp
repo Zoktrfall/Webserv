@@ -5,6 +5,7 @@
 #include <vector>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
 #include <arpa/inet.h>
 #include "ServerDataExc.hpp"
 #include "HttpRequestController.hpp"
@@ -30,6 +31,12 @@ class Tools
         static std::vector<std::string> CheckIndices(std::string indices);
         static void AccessStat(int mode, int accMode, std::string error, std::string value);
         static std::map<int, std::string> InitReturn(std::string ret);
+        static void CheckRootOrLocation(std::string& dir, std::string ex, std::string error);
+        static ThereIs PathExists(const std::string path);
+        static std::string GetCurrentDateTime(void);
+        static bool IsHidden(const std::string& filename);
+        static bool EndsWith(const std::string& str, const std::string& suffix);
+        static std::string GenerateHtmlFromDirectory(const std::string& dirPath);
 
     private:
 };

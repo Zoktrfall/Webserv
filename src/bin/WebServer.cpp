@@ -76,7 +76,6 @@ void WebServer::WriteSockets(fd_set& WriteFDS)
             _ResponseController.HttpResponse(_writeSockets[i].responseSocket,
                                         _serversData.GetServers()[_writeSockets[i].serverIndex],
                                         HttpRequestController::GetRequest(_writeSockets[i].responseSocket));
-            Logger::LogMsg(DEBUG, "Response Sent To Socket", _writeSockets[i].responseSocket);
             HttpRequestController::ClearRequest(_writeSockets[i].responseSocket);
             CloseConnection(_writeSockets, i);
         }

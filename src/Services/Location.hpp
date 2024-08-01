@@ -15,8 +15,8 @@ class Location
     public :
         Location(void);
 
-		const std::string GetPath(void) const;
-   		const std::string GetRoot(void) const; 
+		const std::string& GetPath(void) const;
+   		const std::string& GetRoot(void) const; 
     	int GetAutoindex(void) const;
     	const std::vector<std::string>& GetIndices(void) const;
     	std::map<int, std::string> GetReturn(void) const;

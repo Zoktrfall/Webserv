@@ -10,12 +10,15 @@ Request::Request(void) :
     _body(""),
     _chunks("") {
         _chunkSize = -1;
+        _firstLineCheck = false;;
 }
 
 void Request::SetRequestContent(std::string requestContent) { _requestContent = requestContent; }
 void Request::AppendRequestContent(char* partRequestContent, int bytes) { _requestContent.append(partRequestContent, bytes); }
 void Request::SetBoundaryKey(std::string boundaryKey) { _boundaryKey = boundaryKey; }
 void Request::ClearContent(void) { _requestContent.clear(); }
+void Request::FirstLineCheck(bool status) { _firstLineCheck = status; }
+bool Request::FirstLineCheck(void) { return _firstLineCheck; }
 
 void Request::SetMethod(HttpMethod method) { _method = method; }
 void Request::SetPath(std::string& path) { _path = path; }
@@ -34,6 +37,7 @@ const std::string& Request::GetPath(void) const { return _path; }
 const std::string& Request::GetVersion(void) const { return _version; }
 bool Request::HasHeader(const std::string& headerName) const { return _headers.find(headerName) != _headers.end(); }
 const std::string& Request::GetHeader(const std::string& headerName) { return _headers[headerName]; }
+const std::map<std::string, std::string>& Request::GetHeaders(void) const { return _headers; }
 const std::string& Request::GetBody(void) const { return _body; }
 const std::string& Request::GetChunk(void) const { return _chunks; }
 int Request::GetChunkSize(void) const { return _chunkSize; }

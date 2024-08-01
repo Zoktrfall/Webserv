@@ -14,6 +14,8 @@ class Request
         void SetRequestContent(std::string requestContent);
         void SetBoundaryKey(std::string boundaryKey);
         void ClearContent(void);
+        void FirstLineCheck(bool status);
+        bool FirstLineCheck(void);
 
         void SetMethod(HttpMethod method);
         void SetPath(std::string& path);
@@ -30,21 +32,17 @@ class Request
         const std::string& GetPath(void) const;
         const std::string& GetVersion(void) const;
         const std::string& GetHeader(const std::string& headerName);
+        const std::map<std::string, std::string>& GetHeaders(void) const;
         bool HasHeader(const std::string& headerName) const;
         const std::string& GetBody(void) const;
         const std::string& GetChunk(void) const;
         int GetChunkSize(void) const;
-
-        // void printMap() {
-        //     for (auto iter = _headers.begin(); iter != _headers.end(); ++iter) {
-        //         std::cout << iter->first << ": " << iter->second << std::endl;
-        //     }
-        // }
         
     private :
         std::string _requestContent;
         std::string _boundaryKey;
         int _chunkSize;
+        bool _firstLineCheck;
 
         HttpMethod _method;
         std::string _path;

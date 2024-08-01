@@ -12,12 +12,19 @@ enum RequestResult
     Success
 };
 
+enum ThereIs
+{
+    File,
+    Directory,
+    NotFound,
+    Error
+};
+
 enum HttpMethod 
 {
     GET,
     POST,
     DELETE,
-    PUT,
     HEAD,
     NONE
 };

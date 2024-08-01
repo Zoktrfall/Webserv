@@ -26,7 +26,7 @@ void ServersData::LoadServers(void)
 		CreateServer((ConfigParser::GetBlock(i)), server);
 		_servers.push_back(server);
 	}
-    if (_servers.size() > 1)
+    if(_servers.size() > 1)
 		HasConflicts();
 }
 void ServersData::CreateServer(std::string block, Server& Server)
@@ -229,20 +229,6 @@ void ServersData::CreateServer(std::string block, Server& Server)
             if(Lines[i++] != "{" || Lines[i++] != "deny all;" || Lines[i] != "}")
                 throw ServerDataExc(ESyntaxTo(limit_except));
         }
-        else if(!Lines[i].compare(0, 10, "upload_dir"))
-        {
-            if(inLocation)
-                throw ServerDataExc(ESyntaxTo(upload_dir));
-
-            if(!Server.GetUploadDir().empty())
-                throw ServerDataExc(EUDirDublicate);
-
-            ConfigParser::ItinKeyValue(key, value, Lines[i]);
-            if(key != "upload_dir")
-                throw ServerDataExc(ESyntaxTo(upload_dir));
-
-            Server.SetUploadDir(value);
-        }
         else
             throw ServerDataExc(EUDirective);
     }
@@ -254,8 +240,6 @@ void ServersData::CheckServers(Server& Server)
         throw ServerDataExc(ERequiredParam);
     if(!Server.GetIndices().size())
         Server.SetIndices("./www/html/index.html");
-    if(Server.GetUploadDir().empty())
-        Server.SetUploadDir("./www/uploads");
     if(Server.GetClientMaxBodySize() == -1)
         Server.SetClientMaxBodySize("1m");
     if(Server.GetAutoIndex() == -1)

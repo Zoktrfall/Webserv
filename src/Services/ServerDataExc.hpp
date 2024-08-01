@@ -18,6 +18,7 @@
 #define EOutScope "Wrong character out of server scope{}"
 #define ERequiredParam "Missing required paraneters"
 #define EServerSetup "Inconsistent Server Setup"
+#define ENEPage "No Error Page"
 
 /* Errors related to directives */
 #define EPortSyntax "Wrong syntax: listen"
@@ -51,9 +52,6 @@
 
 #define ELimit "Wrong syntax: limit_except"
 #define ELimitDublicate "Duplicated: limit_except"
-
-#define EUDir "Wrong syntax: upload_dir"
-#define EUDirDublicate "Duplicated: upload_dir"
 
 #define ELocation "Wrong syntax: location"
 

@@ -123,10 +123,7 @@ std::vector<std::string> Tools::CheckIndices(std::string indices)
     std::string fileName;
 
     while(iss >> fileName)
-	{
-        Tools::AccessStat(S_IFREG, R_OK, EIndex, fileName);
         files.push_back(fileName);
-    }
 
     return files;
 }
@@ -169,4 +166,85 @@ std::map<int, std::string> Tools::InitReturn(std::string ret)
     }
 
     return res;
+}
+void Tools::CheckRootOrLocation(std::string& dir, std::string ex, std::string error)
+{
+    if(ex.substr(0, 2) == "./")
+		dir = ex;
+	else if(ex[0] == '/')
+		dir = "." + ex;
+	else
+		dir = "./" + ex;
+	Tools::AccessStat(S_IFDIR, W_OK, error, dir);
+}
+
+ThereIs Tools::PathExists(const std::string path)
+{
+    struct stat info;
+    if(stat(path.c_str(), &info) != 0) 
+        return NotFound;
+    else if(info.st_mode & S_IFDIR)
+        return Directory;
+    else if(info.st_mode & S_IFREG)
+        return File;
+    else
+        return Error;
+}
+
+std::string Tools::GetCurrentDateTime(void)
+{
+    time_t rawtime;
+    time(&rawtime);
+    struct tm * timeinfo;
+    timeinfo = gmtime(&rawtime);
+    char buffer[30];
+    strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", timeinfo);
+    return std::string(buffer);
+}
+
+bool Tools::IsHidden(const std::string& filename) { return !filename.empty() && filename[0] == '.'; }
+
+bool Tools::EndsWith(const std::string& str, const std::string& suffix)
+{
+    if(str.length() >= suffix.length())
+        return (0 == str.compare(str.length() - suffix.length(), suffix.length(), suffix));
+    return false;
+}
+
+std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath)
+{
+    DIR* dir;
+    struct dirent* entry;
+    std::ostringstream oss;
+
+    dir = opendir(dirPath.c_str());
+    if(dir == nullptr)
+    {
+        std::cerr << "Error opening directory: " << dirPath << std::endl;
+        return "";
+    }
+
+    oss << "<!DOCTYPE html>\n";
+    oss << "<html>\n";
+    oss << "<head>\n";
+    oss << "<title>Directory Listing</title>\n";
+    oss << "</head>\n";
+    oss << "<body>\n";
+    oss << "<h1>Directory Listing for " << dirPath << "</h1>\n";
+    oss << "<ul>\n";
+
+    while((entry = readdir(dir)) != nullptr)
+    {
+        std::string name = entry->d_name;
+
+        if(!Tools::IsHidden(name))
+            oss << "<li><a href=\"" << name << "\">" << name << "</a></li>\n";
+    }
+
+    oss << "</ul>\n";
+    oss << "</body>\n";
+    oss << "</html>\n";
+
+    closedir(dir);
+    return oss.str();
 }
