@@ -35,7 +35,7 @@ std::string& Tools::Trim(std::string& str, const std::string& trimmerStr)
 		str.clear();
 	return str;
 }
-RequestResult Tools::Recv(int socketId, char* requestBuffer, int& bytesRead)
+RequestResult Tools::Recv(int socketId, char* requestBuffer, ssize_t& bytesRead)
 {
     memset(requestBuffer, 0, MessageBuffer);
     bytesRead = recv(socketId, requestBuffer, MessageBuffer, 0);

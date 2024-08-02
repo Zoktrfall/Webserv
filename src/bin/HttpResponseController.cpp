@@ -513,7 +513,7 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
             std::string fileName = ExtractFilename(Request.GetHeader("content-disposition"));
             if(fileName.empty())
             {
-                ErrorCodeHandle(500, Server, Request);
+                ErrorCodeHandle(405, Server, Request);
                 _response.SetHeader("Retry-After", "60");
                 return;
             }
@@ -550,7 +550,7 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
             std::string fileName = ExtractFilename(Request.GetHeader("content-disposition"));
             if(fileName.empty())
             {
-                ErrorCodeHandle(500, Server, Request);
+                ErrorCodeHandle(405, Server, Request);
                 _response.SetHeader("Retry-After", "60");
                 return;
             }

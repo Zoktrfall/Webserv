@@ -10,7 +10,7 @@
 #include "Tools.hpp"
 
 #define LimitHeaders 4096
-#define MessageBuffer 40000
+#define MessageBuffer (1024 * 1024)
 #define ConnectionTemeOut 60
 
 class HttpRequestController : public IHttpRequestController
@@ -21,7 +21,7 @@ class HttpRequestController : public IHttpRequestController
 
         Request& GetRequest(int index);
         void ClearRequest(int index);
-        
+
     private :
         std::map<int, Request> _requests;
         
@@ -31,6 +31,7 @@ class HttpRequestController : public IHttpRequestController
         void ParseRequestHeaders(Request& request);
         void FirstRequestLine(const std::string& line, Request& request);
         void ParseHeaderLine(const std::string& line, Request& request);
+        void CheckMultiPart(Request& request, int socketId);
         std::string ExtractBoundary(const std::string& contentType);
         RequestResult ParseBody(Request& request);
         RequestResult ParseChunked(Request& request);

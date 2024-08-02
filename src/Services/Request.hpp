@@ -36,8 +36,8 @@ class Request
         bool HasHeader(const std::string& headerName) const;
         const std::string& GetBody(void) const;
         const std::string& GetChunk(void) const;
-        int GetChunkSize(void) const;
-        
+        int GetChunkSize(void) const;        
+
     private :
         std::string _requestContent;
         std::string _boundaryKey;

@@ -21,7 +21,7 @@ class Tools
         static bool IsUpperCase(const std::string& str);
         static std::string ToLower(const std::string& str);
         static std::string& Trim(std::string& str, const std::string& trimmerStr);
-        static RequestResult Recv(int socketId, char* requestBuffer, int& bytesRead);
+        static RequestResult Recv(int socketId, char* requestBuffer, ssize_t& bytesRead);
         static std::string ToString(int value);
         static bool IsAllDigits(const std::string& str);
         static void CheckSemicolon(std::string& configPart);
