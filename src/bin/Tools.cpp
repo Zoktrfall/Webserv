@@ -211,7 +211,7 @@ bool Tools::EndsWith(const std::string& str, const std::string& suffix)
     return false;
 }
 
-std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath)
+std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath) // wtf
 {
     DIR* dir;
     struct dirent* entry;
