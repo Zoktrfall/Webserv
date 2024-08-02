@@ -42,7 +42,7 @@ bool HttpResponseController::CheckHeaderFields(std::map<std::string, std::string
 
 std::string HttpResponseController::ReadFileAndCreateBody(std::string fileName)
 {
-    std::ifstream file(fileName);
+    std::ifstream file(fileName.c_str());
     if(!file.is_open())
     {
         Logger::LogMsg(WARNING, "Failed to open File", _socketId);
@@ -508,7 +508,7 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
                 return;
             }
 
-            std::ofstream outFile(path + "/" + fileName);
+            std::ofstream outFile((path + "/" + fileName).c_str());
             if(!outFile)
             {
                 Logger::LogMsg(WARNING, "Error opening file", _socketId);
@@ -544,7 +544,7 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
                 return;
             }
 
-            std::ofstream outFile(Server.GetRoot() + Request.GetPath() + "/" + fileName);
+            std::ofstream outFile((Server.GetRoot() + Request.GetPath() + "/" + fileName).c_str());
             if(!outFile)
             {
                 Logger::LogMsg(WARNING, "Error opening file", _socketId);

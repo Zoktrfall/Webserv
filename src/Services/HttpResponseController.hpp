@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <dirent.h>
 #include <algorithm>
+#include <fstream>
 #include "Tools.hpp"
 #include "IHttpResponseController.hpp"
 #include "HttpRequestController.hpp"
