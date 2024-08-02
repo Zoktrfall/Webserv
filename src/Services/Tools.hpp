@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <arpa/inet.h>
+#include "Logger.hpp"
 #include "ServerDataExc.hpp"
 #include "HttpRequestController.hpp"
 #include "HttpTypes.hpp"
@@ -36,7 +37,7 @@ class Tools
         static std::string GetCurrentDateTime(void);
         static bool IsHidden(const std::string& filename);
         static bool EndsWith(const std::string& str, const std::string& suffix);
-        static std::string GenerateHtmlFromDirectory(const std::string& dirPath);
+        static std::string GenerateHtmlFromDirectory(const std::string& dirPath, int socketId);
 
     private:
 };

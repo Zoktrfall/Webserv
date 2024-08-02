@@ -91,11 +91,6 @@ void WebServer::ReadSockets(fd_set& ReadFDS)
                 Logger::LogMsg(DEBUG, "Client Closed Connection", _readSockets[i].clientSocket);
                 return CloseConnection(_readSockets, i);
             }
-            else if(requestResult == ReadError)
-            {
-                Logger::LogMsg(WARNING, "Error reading from socket", _readSockets[i].clientSocket);
-                return CloseConnection(_readSockets, i);
-            }
             else if(requestResult == Multipart || requestResult == Chunked)
                 _readSockets[i].lastTime = time(NULL);
             else

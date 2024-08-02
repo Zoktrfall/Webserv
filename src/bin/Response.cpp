@@ -12,8 +12,6 @@ Response::Response(void) :
         _headers["Connection"] = "";
         _headers["Set-Cookie"] = "";
         _headers["Allow"] = "";
-        _headers["Content-Location"] = "";
-        _headers["Location"] = "";
         _headers["Retry-After"] = "";
 }
 

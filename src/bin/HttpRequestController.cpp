@@ -140,7 +140,7 @@ RequestResult HttpRequestController::HttpRequest(int readSocket)
         CreateNewRequest(readSocket);
 
     RequestResult requestResult = ProcessHTTPRequest(readSocket);
-    if(requestResult == ReadError || requestResult == ClosedConnection)
+    if(requestResult == ClosedConnection)
         _requests.erase(readSocket);
 
     return requestResult;

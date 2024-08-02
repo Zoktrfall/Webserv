@@ -6,7 +6,6 @@
 enum RequestResult
 {
     ClosedConnection,
-    ReadError,
     Chunked,
     Multipart,
     Success

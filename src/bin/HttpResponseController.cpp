@@ -252,8 +252,11 @@ bool HttpResponseController::CheckAndExecuteCgiScript(Server& Server, std::strin
         while((bytesRead = read(pipeOut[0], buffer, sizeof(buffer))) > 0)
             oss.write(buffer, bytesRead);
         close(pipeOut[0]);
-
-        CodeHandleWithBodyAndRequest(200, oss.str(), Request);
+        
+        if(bytesRead == -1)
+            ErrorCodeHandle(503, Server, Request);
+        else    
+            CodeHandleWithBodyAndRequest(200, oss.str(), Request);
     }
     return true;
 }
@@ -304,8 +307,11 @@ void HttpResponseController::ProcessGetHeadMethods(Server& Server, Request& Requ
             {
                 if(Server.GetLocation(mainDirectoryIndex).GetAutoindex() == 1)
                 {
-                    body = Tools::GenerateHtmlFromDirectory(path);
-                    CodeHandleWithBodyAndRequest(200, body, Request);
+                    body = Tools::GenerateHtmlFromDirectory(path, _socketId);
+                    if(body.empty())
+                        ErrorCodeHandle(500, Server, Request);
+                    else
+                        CodeHandleWithBodyAndRequest(200, body, Request);
                 }
                 else
                     ErrorCodeHandle(404, Server, Request);
@@ -338,8 +344,11 @@ void HttpResponseController::ProcessGetHeadMethods(Server& Server, Request& Requ
             {
                 if(Server.GetAutoIndex() == 1)
                 {
-                    body = Tools::GenerateHtmlFromDirectory(Server.GetRoot() + Request.GetPath());
-                    CodeHandleWithBodyAndRequest(200, body, Request);
+                    body = Tools::GenerateHtmlFromDirectory(Server.GetRoot() + Request.GetPath(), _socketId);
+                    if(body.empty())
+                        ErrorCodeHandle(500, Server, Request);
+                    else
+                        CodeHandleWithBodyAndRequest(200, body, Request);
                 }
                 else
                     ErrorCodeHandle(404, Server, Request);
@@ -504,7 +513,8 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
             std::string fileName = ExtractFilename(Request.GetHeader("content-disposition"));
             if(fileName.empty())
             {
-                ErrorCodeHandle(405, Server, Request);
+                ErrorCodeHandle(500, Server, Request);
+                _response.SetHeader("Retry-After", "60");
                 return;
             }
 
@@ -512,7 +522,7 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
             if(!outFile)
             {
                 Logger::LogMsg(WARNING, "Error opening file", _socketId);
-                ErrorCodeHandle(429, Server, Request);
+                ErrorCodeHandle(500, Server, Request);
                 return;
             }
             outFile << Request.GetBody();
@@ -540,7 +550,8 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
             std::string fileName = ExtractFilename(Request.GetHeader("content-disposition"));
             if(fileName.empty())
             {
-                ErrorCodeHandle(405, Server, Request);
+                ErrorCodeHandle(500, Server, Request);
+                _response.SetHeader("Retry-After", "60");
                 return;
             }
 
@@ -548,7 +559,7 @@ void HttpResponseController::ProcessPostMethod(Server& Server, Request& Request)
             if(!outFile)
             {
                 Logger::LogMsg(WARNING, "Error opening file", _socketId);
-                ErrorCodeHandle(429, Server, Request);
+                ErrorCodeHandle(500, Server, Request);
                 return;
             }
             outFile << Request.GetBody();

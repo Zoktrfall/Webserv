@@ -10,7 +10,7 @@
 #include "Tools.hpp"
 
 #define LimitHeaders 4096
-#define MessageBuffer 400000
+#define MessageBuffer 40000
 #define ConnectionTemeOut 60
 
 class HttpRequestController : public IHttpRequestController

@@ -41,8 +41,8 @@ RequestResult Tools::Recv(int socketId, char* requestBuffer, int& bytesRead)
     bytesRead = recv(socketId, requestBuffer, MessageBuffer, 0);
     if(bytesRead == 0)
         return ClosedConnection;
-    else if(bytesRead < 0 && !(errno == EAGAIN || errno == EWOULDBLOCK)) // wtf
-        return ReadError;
+    else if(bytesRead < 0)
+        return Success;
     return Success;
 }
 std::string Tools::ToString(int value)
@@ -211,7 +211,7 @@ bool Tools::EndsWith(const std::string& str, const std::string& suffix)
     return false;
 }
 
-std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath) // wtf
+std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath, int socketId)
 {
     DIR* dir;
     struct dirent* entry;
@@ -220,7 +220,7 @@ std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath) // wtf
     dir = opendir(dirPath.c_str());
     if(dir == NULL)
     {
-        std::cerr << "Error opening directory: " << dirPath << std::endl;
+        Logger::LogMsg(WARNING, "Error opening directory", socketId);
         return "";
     }
 
@@ -236,7 +236,6 @@ std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath) // wtf
     while((entry = readdir(dir)) != NULL)
     {
         std::string name = entry->d_name;
-
         if(!Tools::IsHidden(name))
             oss << "<li><a href=\"" << name << "\">" << name << "</a></li>\n";
     }
