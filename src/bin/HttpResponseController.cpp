@@ -299,7 +299,7 @@ void HttpResponseController::ProcessGetHeadMethods(Server& Server, Request& Requ
         {
             for(size_t i = 0; i < Server.GetLocation(mainDirectoryIndex).GetIndices().size(); i++)
             {
-                body = ReadFileAndCreateBody(path + Server.GetIndex(i));
+                body = ReadFileAndCreateBody(path + + "/" + Server.GetLocation(mainDirectoryIndex).GetIndex(i));
                 if(!body.empty())
                     break;
             }

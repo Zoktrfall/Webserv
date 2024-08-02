@@ -17,6 +17,7 @@ const std::string& Location::GetPath(void) const { return _path; }
 const std::string& Location::GetRoot(void) const { return _root; }
 int Location::GetAutoindex(void) const { return _autoindex; }
 const std::vector<std::string>& Location::GetIndices() const { return _indices; }
+std::string Location::GetIndex(size_t i) const { return _indices[i]; }
 std::string Location::GetAlias() const { return _alias; }
 long long Location::GetClientMaxBodySize(void) const { return _client_max_body_size; }
 std::vector<std::string> Location::GetCgiPath(void) const { return _cgi_path; }

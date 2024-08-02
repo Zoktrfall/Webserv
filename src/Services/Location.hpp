@@ -19,6 +19,7 @@ class Location
    		const std::string& GetRoot(void) const; 
     	int GetAutoindex(void) const;
     	const std::vector<std::string>& GetIndices(void) const;
+		std::string GetIndex(size_t i) const;
     	std::map<int, std::string> GetReturn(void) const;
     	std::string GetAlias(void) const;
     	long long GetClientMaxBodySize(void) const;
