@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <algorithm>
 #include <fstream>
+#include <sys/wait.h>
 #include "Tools.hpp"
 #include "IHttpResponseController.hpp"
 #include "HttpRequestController.hpp"
