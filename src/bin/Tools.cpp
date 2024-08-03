@@ -243,7 +243,7 @@ std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath, int soc
     {
         std::string name = entry->d_name;
         if(!Tools::IsHidden(name))
-            oss << "<li><a href=\"" << name << "\">" << name << "</a></li>\n";
+            oss << "<li><span>" << name << "</span></li>\n";
     }
 
     oss << "</ul>\n";
