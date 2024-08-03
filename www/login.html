@@ -3,24 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login and Cookie Management</title>
+    <title>Miracle</title>
     <style>
+        html {
+            color-scheme: light dark;
+            height: 100%;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            width: 100%; 
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
         }
-        h1 {
-            color: #333;
+
+        h1, .footer, p {
+            color: #ffffff;
         }
+
         label {
             display: block;
             margin-top: 10px;
         }
+
         input {
             padding: 8px;
             margin-top: 5px;
             width: 200px;
         }
+
         button {
             margin-top: 10px;
             padding: 10px;
@@ -30,15 +44,24 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         .container {
             margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
         }
     </style>
     <script>
-        // Function to set a cookie
         function setCookie(name, value, days) {
             let expires = "";
             if (days) {
@@ -49,53 +72,72 @@
             document.cookie = name + "=" + (value || "") + ";" + expires + ";path=/";
         }
 
-        // Function to get a cookie by name
         function getCookie(name) {
             const nameEQ = name + "=";
             const ca = document.cookie.split(';');
             for (let i = 0; i < ca.length; i++) {
                 let c = ca[i];
-                while (c.charAt(0) === ' ') c = c.substring(1);
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
                 if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
             }
             return null;
         }
 
-        // Function to erase a cookie
         function eraseCookie(name) {
             document.cookie = name + '=; Max-Age=-99999999;';
         }
 
-        // Function to handle login
         function login() {
             const username = document.getElementById("username").value;
-            // Simulate a successful login by setting a cookie
-            setCookie("session_id", "exampleSessionId123", 1); // Set a cookie with a session ID
-            alert("Logged in successfully. Session ID cookie set.");
+            if (username) {
+                setCookie("username", username, 1);
+                alert("Logged in successfully. Session ID cookie set.");
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("status").innerText = "You are logged in as " + username + ". Thank you for using Miracle.";
+            }
         }
 
-        // Function to handle logout
         function logout() {
-            eraseCookie("session_id"); // Erase the session ID cookie
+            eraseCookie("username");
             alert("Logged out successfully. Session ID cookie removed.");
+            document.getElementById("login-form").style.display = "block";
+            document.getElementById("status").innerText = "";
         }
 
-        // Function to display the current cookie
         function showCookies() {
             alert("Current cookies: " + document.cookie);
         }
+
+        function checkLogin() {
+            const username = getCookie("username");
+            if (username) {
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("status").innerText = "You are logged in as " + username + ". Thank you for using Miracle.";
+            }
+        }
+
+        window.onload = function() {
+            checkLogin();
+        };
     </script>
 </head>
 <body>
-    <h1>Login and Cookie Management</h1>
-    <form onsubmit="login(); return false;">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <button type="submit">Login</button>
-    </form>
     <div class="container">
-        <button onclick="showCookies()">Show Cookies</button>
-        <button onclick="logout()">Logout</button>
+        <h1>Welcome to Miracle!</h1>
+        <p>Miracle also ensures proper cookie and session management.</p>
+        <div id="login-form">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="status"></div>
+        <div>
+            <button onclick="showCookies()">Show Cookies</button>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </div>
+    <div class="footer">
+        Thank you for using Miracle.
     </div>
 </body>
 </html>

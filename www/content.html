@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miracle</title>
+    <style>
+        html {
+            color-scheme: light dark;
+            height: 100%;
+        }
+        body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+            background-color: #111111;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        h1, .footer, p {
+            color: #ffffff;
+        }
+        p {
+            color: #cccccc;
+        }
+        #uploadForm {
+            background-color: #444444;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Miracle!</h1>
+        <p>Feel free to modify and add your content here!</p>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" name="file" id="fileInput" required />
+            <button type="submit">Upload File</button>
+        </form>
+        <div id="statusMessage"></div>
+        <div class="footer">
+            Thank you for using Miracle.
+        </div>
+    </div>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('uploadForm');
+            const statusMessage = document.getElementById('statusMessage');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    if (!response.ok) {
+                        throw new Error('Upload failed');
+                    }
+                    statusMessage.textContent = 'File uploaded successfully!';
+                    form.reset();
+                } catch (error) {
+                    statusMessage.textContent = 'Upload failed. Please try again.';
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

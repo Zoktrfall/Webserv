@@ -227,10 +227,16 @@ std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath, int soc
     oss << "<!DOCTYPE html>\n";
     oss << "<html>\n";
     oss << "<head>\n";
-    oss << "<title>Directory Listing</title>\n";
+    oss << "<title>Miracle</title>\n";
+    oss << "<style>\n";
+    oss << "html { color-scheme: light dark; }\n";
+    oss << "body { width: 35em; margin: 0 auto;\n";
+    oss << "font-family: Tahoma, Verdana, Arial, sans-serif; }\n";
+    oss << "</style>\n";
+    oss << "<link rel=\"icon\" href=\"polygon.jpeg\" type=\"image/jpeg\">\n";
     oss << "</head>\n";
     oss << "<body>\n";
-    oss << "<h1>Directory Listing for " << dirPath << "</h1>\n";
+    oss << "<h1>Welcome to Miracle!(autoindex)</h1>\n";
     oss << "<ul>\n";
 
     while((entry = readdir(dir)) != NULL)
@@ -241,6 +247,7 @@ std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath, int soc
     }
 
     oss << "</ul>\n";
+    oss << "<p><em>Thank you for using Miracle.</em></p>\n";
     oss << "</body>\n";
     oss << "</html>\n";
 

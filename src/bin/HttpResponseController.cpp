@@ -241,7 +241,7 @@ bool HttpResponseController::CheckAndExecuteCgiScript(Server& Server, std::strin
 
         if(WIFEXITED(status) && WEXITSTATUS(status) != 0)
         {
-            ErrorCodeHandle(501, Server, Request);
+            ErrorCodeHandle(404, Server, Request);
             Logger::LogMsg(WARNING, "CGI script execution failed", _socketId);
             return true;
         }
