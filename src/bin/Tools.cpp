@@ -233,7 +233,7 @@ std::string Tools::GenerateHtmlFromDirectory(const std::string& dirPath, int soc
     oss << "body { width: 35em; margin: 0 auto;\n";
     oss << "font-family: Tahoma, Verdana, Arial, sans-serif; }\n";
     oss << "</style>\n";
-    oss << "<link rel=\"icon\" href=\"polygon.jpeg\" type=\"image/jpeg\">\n";
+    oss << "<link rel=\"icon\" href=\"./errors/Miracle.jpeg\" type=\"image/jpeg\">\n";
     oss << "</head>\n";
     oss << "<body>\n";
     oss << "<h1>Welcome to Miracle!(autoindex)</h1>\n";
