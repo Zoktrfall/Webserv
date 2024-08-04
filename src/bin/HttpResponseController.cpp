@@ -62,7 +62,6 @@ void HttpResponseController::ErrorCodeHandle(int code, Server& Server, Request& 
     _response.SetHeader("Server", "Miracle");
     _response.SetHeader("Date", Tools::GetCurrentDateTime());
     _response.SetHeader("Connection", "close");
-    _response.SetHeader("Content-Type", "text/html");
     _response.SetHeader("Content-Language", "en-US");
     _response.SetHeader("Content-Length", Tools::ToString(body.size()));
     _response.SetResponseBody(body);
@@ -81,7 +80,6 @@ void HttpResponseController::CodeHandleWithBodyAndRequest(int code, std::string 
     _response.SetHeader("Server", "Miracle");
     _response.SetHeader("Date", Tools::GetCurrentDateTime());
     _response.SetHeader("Connection", "close");
-    _response.SetHeader("Content-Type", "text/html");
     _response.SetHeader("Content-Language", "en-US");
     _response.SetHeader("Content-Length", Tools::ToString(body.size()));
     if(Request.GetMethod() != HEAD)

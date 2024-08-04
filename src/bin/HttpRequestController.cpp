@@ -8,6 +8,11 @@ void HttpRequestController::FirstRequestLine(const std::string& line, Request& r
     std::string method, path, version;
     iss >> method >> path >> version;
     HttpMethod parsedMethod = NONE;
+
+    size_t pos = path.find('?');
+    if(pos != std::string::npos)
+        path = path.substr(0, pos);
+
     if(method == "GET")
         parsedMethod = GET;
     else if(method == "POST")

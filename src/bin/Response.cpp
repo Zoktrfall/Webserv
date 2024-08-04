@@ -7,7 +7,6 @@ Response::Response(void) :
         _headers["Server"] = "";
         _headers["Date"] = "";
         _headers["Content-Length"] = "";
-        _headers["Content-Type"] = "";
         _headers["Content-Language"] = "";
         _headers["Connection"] = "";
         _headers["Set-Cookie"] = "";
